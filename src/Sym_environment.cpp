@@ -2,46 +2,6 @@
 #include <string>
 #include <bitset>
 
-class Sym_trie_node
-{
-    std::shared_ptr<Symbol> sym;
-    std::shared_ptr<Sym_trie_node> next[62];
-
-    // 持久化标记，对应每一个next指针
-    // 若为0，则在add时需要拷贝指向的对象
-    std::bitset<62> persistent_flag;
-
-public:
-    Sym_trie_node()
-    {
-        persistent_flag.set();
-    }
-
-    ~Sym_trie_node() = default;
-
-    Sym_trie_node(const Sym_trie_node& node)
-    {
-        sym = node.sym;
-        for (int i = 0; i < 62; ++i)
-            next[i] = node.next[i];
-        persistent_flag.reset();
-    }
-
-    Sym_trie_node& operator=(const Sym_trie_node&) = delete;
-
-    static size_t mapping(int ch) noexcept
-    {
-        if (isupper(ch))
-            return ch - 'A';
-        else if (islower(ch))
-            return ch - 'a' + 26;
-        else
-            return ch + 52;
-    }
-
-    friend class Sym_environment_trie;
-};
-
 Sym_environment_trie::Sym_environment_trie()
 {
     env_list.push_back(std::unique_ptr<Sym_trie_node>(new Sym_trie_node()));
@@ -55,24 +15,22 @@ void Sym_environment_trie::push_env()
 
 void Sym_environment_trie::pop_env()
 {
-    if (env_list.size() > 1)  // 禁止删除全局的符号环境
+    if (env_list.size() > 1) // 禁止删除全局的符号环境
         env_list.pop_back();
 }
 
-std::shared_ptr<Symbol> Sym_environment_trie::get_symbol(const std::string& name) const
+std::shared_ptr<Symbol> Sym_environment_trie::get_symbol(const std::string &name) const
 {
-    auto index = env_list.size() - 1;  // 保证index有效
-
-    Sym_trie_node *node = env_list[index].get();
+    Sym_trie_node *node = env_list.back().get(); // 不规范，但单线程下安全
     size_t len = name.length();
     size_t name_index = 0;
 
     for (; name_index < len; ++name_index)
     {
-        int idx = Sym_trie_node::mapping(name[name_index]);
-        if (!node->next[idx])
+        auto it = node->next_map.find(name[name_index]);
+        if (it == node->next_map.end())
             break;
-        node = node->next[idx].get();
+        node = it->second.nxt.get();
     }
 
     if (name_index == len)
@@ -81,33 +39,26 @@ std::shared_ptr<Symbol> Sym_environment_trie::get_symbol(const std::string& name
         return std::shared_ptr<Symbol>();
 }
 
-void Sym_environment_trie::add_symbol(const std::string& name, const std::shared_ptr<Symbol>& symbol)
+void Sym_environment_trie::add_symbol(const std::string &name, const std::shared_ptr<Symbol> &symbol)
 {
-    auto index = env_list.size() - 1;
+    Sym_trie_node *node = env_list.back().get();
 
-    Sym_trie_node *node = env_list[index].get();
     for (auto ch : name)
     {
-        int idx = Sym_trie_node::mapping(ch);
-        if (!node->next[idx])
+        auto it = node->next_map.find(ch);
+        if (it == node->next_map.end()) // 不存在前缀，插入新结点保存前缀
+            it = node->next_map.insert(std::make_pair(ch, trie_node_next(std::make_shared<Sym_trie_node>()))).first;
+        else
         {
-            node->next[idx] = std::make_shared<Sym_trie_node>();
-            node->persistent_flag[idx] = 1;
+            auto &nxt_node = it->second;
+            if (nxt_node.persistent_flag == 0) // 指向老版本，拷贝一份并让其指向拷贝版本
+            {
+                nxt_node.nxt = std::make_shared<Sym_trie_node>(*(nxt_node.nxt));
+                nxt_node.persistent_flag = 1;
+            }
         }
-        else if (!node->persistent_flag[idx])   // 指向了老版本，需指向拷贝后的新版本
-        {
-            std::shared_ptr<Sym_trie_node> tmp(new Sym_trie_node(*(node->next[idx])));
-            node->next[idx] = tmp;
-            node->persistent_flag[idx] = 1;
-        }
-        node = node->next[idx].get();
+        node = it->second.nxt.get();
     }
 
     node->sym = symbol;
-}
-
-int main()
-{
-    Sym_environment_trie x;
-    return 0;
 }
