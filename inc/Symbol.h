@@ -1,118 +1,148 @@
 #pragma once
 
-#include <string>
-#include "type_info.h"
+#include "Type.h"
 
-enum class Symbol_type_class
+enum class Sym_type
 {
-    Sym_var,
+    Sym_object,
+    Sym_const_object,
     Sym_function,
-    Sym_array,
     Sym_label
 };
 
-class Symbol
+class Symbol 
+{
+public:
+    virtual Sym_type get_sym_type() const = 0;
+};
+
+class Sym_function : public Symbol
 {
 private:
-    Symbol_type_class type_class;
-    std::string name;
+    std::shared_ptr<Function_type> func_type;
+    // addr
 
 public:
-    Symbol(Symbol_type_class t, const std::string &s) : type_class(t), name(s) {}
-    ~Symbol() = default;
+    Sym_function(const std::shared_ptr<Function_type> &fun_type) : func_type(fun_type) {}
+    ~Sym_function() = default;
 
-    Symbol_type_class get_sym_type_class() const
+    Sym_type get_sym_type() const override
     {
-        return type_class;
-    }
-
-    const std::string &get_sym_name() const
-    {
-        return name;
+        return Sym_type::Sym_function;
     }
 };
 
-class Symbol_var : public Symbol
+class Sym_label : public Symbol
 {
-private:
-    bool const_flag;
-    Var_type type;
+public:
+    Sym_label() = default;
+    ~Sym_label() = default;
+
+    Sym_type get_sym_type() const override
+    {
+        return Sym_type::Sym_label;
+    }
+};
+
+class Sym_object : public Symbol
+{
+protected:
+    std::shared_ptr<Object_type> type;
+    // scope
+    // addr
 
 public:
-    Symbol_var(const std::string &s, bool is_const, Var_type ty) : Symbol(Symbol_type_class::Sym_var, s), const_flag(is_const), type(ty) {}
-    ~Symbol_var() = default;
+    Sym_object(const std::shared_ptr<Object_type> &t) : type(t) {}
+    ~Sym_object() = default;
 
-    bool is_const() const
-    {
-        return const_flag;
-    }
-
-    Var_type get_type() const
+    std::shared_ptr<Object_type> get_type() const
     {
         return type;
     }
+
+    Type_name get_type_name() const
+    {
+        return type->get_type_name();
+    }
+
+    Sym_type get_sym_type() const override
+    {
+        return Sym_type::Sym_object;
+    }
 };
 
-class Symbol_array : public Symbol
+class Sym_const_object : public Sym_object
 {
-private:
-    bool const_flag;
-    Array_type_info info;
-
-public:
-    Symbol_array(const std::string &s, bool is_const, const Array_type_info &arr_info) : Symbol(Symbol_type_class::Sym_array, s), const_flag(is_const), info(arr_info) {}
-    ~Symbol_array() = default;
-
-    bool is_const() const
-    {
-        return const_flag;
-    }
-
-    // 得到数组维度
-    size_t get_dim_number() const
-    {
-        return info.dim_vector.size();
-    }
-
-    // 得到第i维大小
-    int get_dim(size_t i) const
-    {
-        if (i < 0 || i >= get_dim_number())
-            throw std::runtime_error("array index out of range.");
-        return info.dim_vector[i];
-    }
 };
 
-class Symbol_function : public Symbol
-{
-private:
-    Function_type_info info;
 
-public:
-    Symbol_function(const std::string &s, const Function_type_info &fun_info) : Symbol(Symbol_type_class::Sym_function, s), info(fun_info) {}
-    ~Symbol_function() = default;
+// template <typename T>
+// class Sym_imm : public Symbol
+// {
+// private:
+//     const T value;
 
-    Function_return_type get_return_type() const
-    {
-        return info.return_type;
-    }
+// public:
+//     Sym_imm(const std::shared_ptr<Type> &type, const T val);
+//     ~Sym_imm() = default;
 
-    size_t get_param_number() const
-    {
-        return info.param_list.size();
-    }
+//     const T get_value() const;
+// };
 
-    Symbol &get_param(size_t i) const
-    {
-        if (i < 0 || i >= get_param_number())
-            throw std::runtime_error("array index out of range.");
-        return *(info.param_list[i]);
-    }
-};
+// class Sym_void : public Symbol
+// {
+// public:
+//     Sym_void();
+//     ~Sym_void();
+// };
 
-class Symbol_label : public Symbol
-{
-public:
-    Symbol_label(const std::string &s) : Symbol(Symbol_type_class::Sym_label, s) {}
-    ~Symbol_label() = default;
-};
+
+
+// class Sym_var : public Symbol
+// {
+// protected:
+//     // scope
+//     // addr
+//     std::string name;
+
+// public:
+//     Sym_var(const std::shared_ptr<Type> &type, const std::string &str);
+//     Sym_var(const std::shared_ptr<Type> &type);
+//     ~Sym_var() = default;
+// };
+
+
+
+// #define MAKE_CONST true
+
+// class Sym_reference : public Symbol
+// {
+// private:
+//     bool const_flag;
+//     std::string name;
+//     // scope
+//     // addr
+
+// public:
+//     Sym_reference(const std::shared_ptr<Reference_type> &base_type, bool is_const = false);
+//     Sym_reference(const std::shared_ptr<Reference_type> &base_type, const std::string &str, bool is_const = false);
+//     ~Sym_reference() = default;
+
+//     bool is_const() const;
+// };
+
+
+
+// class Sym_array : public Symbol
+// {
+// protected:
+//     std::string name;
+//     // scope
+//     // addr
+
+// public:
+//     Sym_array(const std::shared_ptr<Array_type> &arr_type, const std::string &str);
+//     Sym_array(const std::shared_ptr<Array_type> &arr_type);
+//     ~Sym_array();
+// };
+
