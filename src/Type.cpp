@@ -171,3 +171,12 @@ std::string Float_type::to_string() const
 {
     return std::string("float");
 }
+
+
+
+Type_name Type::type_max(Type_name t1, Type_name t2)
+{
+    if (t1 == Type_name::T_float || t2 == Type_name::T_float)
+        return Type_name::T_float;
+    return Type_name::T_int;
+}

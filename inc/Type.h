@@ -19,6 +19,9 @@ public:
     virtual Type_name get_type_name() const = 0;
     virtual bool is_arith_type() const = 0;
     virtual std::string to_string() const = 0;  // 编译器输出信息使用
+
+    // 得到t1, t2的最大类型(目前为int提升为float)
+    static Type_name type_max(Type_name t1, Type_name t2);
 };
 
 class Object_type : public Type

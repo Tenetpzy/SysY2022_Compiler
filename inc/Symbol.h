@@ -18,6 +18,13 @@ public:
     virtual Sym_type get_sym_type() const = 0;
 };
 
+// 作为表达式值的Symbol的接口
+class Sym_expr_value
+{
+public:
+    virtual std::shared_ptr<Type> get_expr_value_type() const = 0;
+};
+
 class Sym_function : public Symbol
 {
 private:
@@ -46,7 +53,7 @@ public:
     }
 };
 
-class Sym_object : public Symbol
+class Sym_object : public Symbol, public Sym_expr_value
 {
 protected:
     std::shared_ptr<Object_type> type;
@@ -57,15 +64,15 @@ public:
     Sym_object(const std::shared_ptr<Object_type> &t) : type(t) {}
     ~Sym_object() = default;
 
-    std::shared_ptr<Object_type> get_type() const
+    std::shared_ptr<Type> get_expr_value_type() const override
     {
         return type;
     }
 
-    Type_name get_type_name() const
-    {
-        return type->get_type_name();
-    }
+    // Type_name get_type_name() const
+    // {
+    //     return type->get_type_name();
+    // }
 
     Sym_type get_sym_type() const override
     {
@@ -77,7 +84,7 @@ class Sym_const_object : public Sym_object
 {
 };
 
-class Sym_int : public Symbol
+class Sym_int : public Symbol, public Sym_expr_value
 {
 private:
     int value;
@@ -90,9 +97,14 @@ public:
     {
         return Sym_type::Sym_int;
     }
+
+    std::shared_ptr<Type> get_expr_value_type() const override
+    {
+        return std::make_shared<Int_type>();
+    }
 };
 
-class Sym_float : public Symbol
+class Sym_float : public Symbol, public Sym_expr_value
 {
 private:
     float value;
@@ -104,6 +116,11 @@ public:
     Sym_type get_sym_type() const override
     {
         return Sym_type::Sym_float;
+    }
+
+    std::shared_ptr<Type> get_expr_value_type() const override
+    {
+        return std::make_shared<Float_type>();
     }
 };
 

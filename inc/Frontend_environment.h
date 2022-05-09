@@ -1,8 +1,14 @@
 #pragma once
 
 #include "Sym_environment.h"
+#include "TAC.h"
+#include <cstdio>
+#include <cstdarg>
 
-class Frontend_env
+extern int yylineno;
+extern int yycolno;
+
+class Frontend_util
 {
 private:
     static Sym_environment *sym_env;
@@ -19,5 +25,15 @@ public:
         if (sym_env == nullptr)
             sym_env = generate_sym_env();
         return *sym_env;
+    }
+
+    static void report_error(const char *fmt, ...)
+    {
+        va_list args;
+        va_start(args, fmt);
+        fprintf(stderr, "error at line: %d, column: %d\n", yylineno, yycolno);
+        vfprintf(stderr, fmt, args);
+        fprintf(stderr, "\n");
+        exit(0);
     }
 };
