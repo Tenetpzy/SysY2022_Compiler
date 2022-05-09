@@ -4,6 +4,8 @@
 
 enum class Sym_type
 {
+    Sym_int,
+    Sym_float,
     Sym_object,
     Sym_const_object,
     Sym_function,
@@ -75,6 +77,35 @@ class Sym_const_object : public Sym_object
 {
 };
 
+class Sym_int : public Symbol
+{
+private:
+    int value;
+
+public:
+    Sym_int(const int val) : value(val) {}
+    ~Sym_int() = default;
+
+    Sym_type get_sym_type() const override
+    {
+        return Sym_type::Sym_int;
+    }
+};
+
+class Sym_float : public Symbol
+{
+private:
+    float value;
+
+public:
+    Sym_float(const float val) : value(val) {}
+    ~Sym_float() = default;
+
+    Sym_type get_sym_type() const override
+    {
+        return Sym_type::Sym_float;
+    }
+};
 
 // template <typename T>
 // class Sym_imm : public Symbol

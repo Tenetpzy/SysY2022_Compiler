@@ -2,9 +2,7 @@
 
 #include <memory>
 
-class Symbol;
 
 class TAC
 {
-public:
 };
