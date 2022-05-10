@@ -9,16 +9,19 @@ class Symbol;
 
 enum class TAC_type
 {
-    add,
-    sub,
-    mul,
-    div,
-    eq,
-    ne,
-    lt,
-    le,
-    gt,
-    ge,
+    bin_arith,
+    bin_rel,
+    // add,
+    // sub,
+    // mul,
+    // div,
+    // mod,
+    // eq,
+    // ne,
+    // lt,
+    // le,
+    // gt,
+    // ge,
     load_offset,
     store_offset,
     neg,
@@ -53,162 +56,207 @@ public:
     virtual TAC_type tac_type() const = 0;
 };
 
-// a = b + c
-// operands: a b c
-class TAC_add : public TAC
+class TAC_bin_arith : public TAC
 {
+private:
+    Op_type op;
+
 public:
-    TAC_add(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_add() = default;
+    TAC_bin_arith(const Op_type _op, const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) : op(_op), TAC({a, b, c}) {}
+    ~TAC_bin_arith() = default;
 
     TAC_type tac_type() const override
     {
-        return TAC_type::add;
+        return TAC_type::bin_arith;
     }
 };
 
-// a = b - c
-// operands: a b c
-class TAC_sub : public TAC
+class TAC_bin_rel : public TAC
 {
+private:
+    Op_type op;
+
 public:
-    TAC_sub(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_sub() = default;
+    TAC_bin_rel(const Op_type _op, const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) : op(_op), TAC({a, b, c}) {}
+    ~TAC_bin_rel() = default;
 
     TAC_type tac_type() const override
     {
-        return TAC_type::sub;
+        return TAC_type::bin_rel;
     }
 };
 
-// a = b * c
-// operands: a b c
-class TAC_mul : public TAC
-{
-public:
-    TAC_mul(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_mul() = default;
+// // a = b + c
+// // operands: a b c
+// class TAC_add : public TAC
+// {
+// public:
+//     TAC_add(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_add() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::mul;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::add;
+//     }
+// };
 
-// a = b * c
-// operands: a b c
-class TAC_div : public TAC
-{
-public:
-    TAC_div(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_div() = default;
+// // a = b - c
+// // operands: a b c
+// class TAC_sub : public TAC
+// {
+// public:
+//     TAC_sub(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_sub() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::div;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::sub;
+//     }
+// };
 
-// a = (b == c)
-// operands: a b c
-class TAC_eq : public TAC
-{
-public:
-    TAC_eq(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_eq() = default;
+// // a = b * c
+// // operands: a b c
+// class TAC_mul : public TAC
+// {
+// public:
+//     TAC_mul(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_mul() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::eq;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::mul;
+//     }
+// };
 
-// a = (b != c)
-// operands: a b c
-class TAC_ne : public TAC
-{
-public:
-    TAC_ne(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_ne() = default;
+// // a = b * c
+// // operands: a b c
+// class TAC_div : public TAC
+// {
+// public:
+//     TAC_div(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_div() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::ne;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::div;
+//     }
+// };
 
-// a = (b < c)
-// operands: a b c
-class TAC_lt : public TAC
-{
-public:
-    TAC_lt(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_lt() = default;
+// // a = b % c
+// // operands: a b c
+// class TAC_mod : public TAC
+// {
+// public:
+//     TAC_mod(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_mod() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::lt;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::mod;
+//     }
+// };
 
-// a = (b <= c)
-// operands: a b c
-class TAC_le : public TAC
-{
-public:
-    TAC_le(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_le() = default;
+// // a = (b == c)
+// // operands: a b c
+// class TAC_eq : public TAC
+// {
+// public:
+//     TAC_eq(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_eq() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::le;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::eq;
+//     }
+// };
 
-// a = (b > c)
-// operands: a b c
-class TAC_gt : public TAC
-{
-public:
-    TAC_gt(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_gt() = default;
+// // a = (b != c)
+// // operands: a b c
+// class TAC_ne : public TAC
+// {
+// public:
+//     TAC_ne(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_ne() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::gt;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::ne;
+//     }
+// };
 
-// a = (b >= c)
-// operands: a b c
-class TAC_ge : public TAC
-{
-public:
-    TAC_ge(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
-        TAC({a, b, c}) { }
-    ~TAC_ge() = default;
+// // a = (b < c)
+// // operands: a b c
+// class TAC_lt : public TAC
+// {
+// public:
+//     TAC_lt(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_lt() = default;
 
-    TAC_type tac_type() const override
-    {
-        return TAC_type::ge;
-    }
-};
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::lt;
+//     }
+// };
+
+// // a = (b <= c)
+// // operands: a b c
+// class TAC_le : public TAC
+// {
+// public:
+//     TAC_le(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_le() = default;
+
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::le;
+//     }
+// };
+
+// // a = (b > c)
+// // operands: a b c
+// class TAC_gt : public TAC
+// {
+// public:
+//     TAC_gt(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_gt() = default;
+
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::gt;
+//     }
+// };
+
+// // a = (b >= c)
+// // operands: a b c
+// class TAC_ge : public TAC
+// {
+// public:
+//     TAC_ge(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+//         TAC({a, b, c}) { }
+//     ~TAC_ge() = default;
+
+//     TAC_type tac_type() const override
+//     {
+//         return TAC_type::ge;
+//     }
+// };
 
 // a = b[c]
 // operands: a b c
 class TAC_load_offset : public TAC
 {
 public:
-    TAC_load_offset(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
+    TAC_load_offset(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
         TAC({a, b, c}) { }
     ~TAC_load_offset() = default;
 
@@ -223,7 +271,7 @@ public:
 class TAC_store_offset : public TAC
 {
 public:
-    TAC_store_offset(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b, const std::shared_ptr<Symbol> &c) :
+    TAC_store_offset(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
         TAC({a, b, c}) { }
     ~TAC_store_offset() = default;
 
@@ -238,7 +286,7 @@ public:
 class TAC_neg : public TAC
 {
 public:
-    TAC_neg(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_neg(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_neg() = default;
 
@@ -253,7 +301,7 @@ public:
 class TAC_copy : public TAC
 {
 public:
-    TAC_copy(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_copy(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_copy() = default;
 
@@ -268,7 +316,7 @@ public:
 class TAC_lea : public TAC
 {
 public:
-    TAC_lea(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_lea(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_lea() = default;
 
@@ -283,7 +331,7 @@ public:
 class TAC_load : public TAC
 {
 public:
-    TAC_load(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_load(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_load() = default;
 
@@ -298,7 +346,7 @@ public:
 class TAC_store : public TAC
 {
 public:
-    TAC_store(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_store(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_store() = default;
 
@@ -313,7 +361,7 @@ public:
 class TAC_goto : public TAC
 {
 public:
-    TAC_goto(const std::shared_ptr<Symbol> &a) :
+    TAC_goto(const std::shared_ptr<Symbol> a) :
         TAC({a}) { }
     ~TAC_goto() = default;
 
@@ -328,7 +376,7 @@ public:
 class TAC_if : public TAC
 {
 public:
-    TAC_if(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_if(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_if() = default;
 
@@ -343,7 +391,7 @@ public:
 class TAC_ifz : public TAC
 {
 public:
-    TAC_ifz(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) :
+    TAC_ifz(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) :
         TAC({a, b}) { }
     ~TAC_ifz() = default;
 
@@ -358,7 +406,7 @@ public:
 class TAC_label : public TAC
 {
 public:
-    TAC_label(const std::shared_ptr<Symbol> &a) :
+    TAC_label(const std::shared_ptr<Symbol> a) :
         TAC({a}) { }
     ~TAC_label() = default;
 
@@ -372,7 +420,7 @@ public:
 class TAC_var_decl : public TAC
 {
 public:
-    TAC_var_decl(const std::shared_ptr<Symbol> &a) : 
+    TAC_var_decl(const std::shared_ptr<Symbol> a) : 
         TAC({a}){ }
     ~TAC_var_decl() = default;
 
@@ -386,7 +434,7 @@ public:
 class TAC_formal_decl : public TAC
 {
 public:
-    TAC_formal_decl(const std::shared_ptr<Symbol> &a) : 
+    TAC_formal_decl(const std::shared_ptr<Symbol> a) : 
         TAC({a}) { }
     ~TAC_formal_decl() = default;
 
@@ -400,7 +448,7 @@ public:
 class TAC_actual_decl : public TAC
 {
 public:
-    TAC_actual_decl(const std::shared_ptr<Symbol> &a) : 
+    TAC_actual_decl(const std::shared_ptr<Symbol> a) : 
         TAC({a}){ }
     ~TAC_actual_decl() = default;
 
@@ -414,7 +462,7 @@ public:
 class TAC_call_ret : public TAC
 {
 public:
-    TAC_call_ret(const std::shared_ptr<Symbol> &a, const std::shared_ptr<Symbol> &b) : 
+    TAC_call_ret(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b) : 
         TAC({a, b}) { }
     ~TAC_call_ret() = default;
 
@@ -428,7 +476,7 @@ public:
 class TAC_call_noret : public TAC
 {
 public:
-    TAC_call_noret(const std::shared_ptr<Symbol> &a) : 
+    TAC_call_noret(const std::shared_ptr<Symbol> a) : 
         TAC({a}) { }
     ~TAC_call_noret() = default;
 
@@ -442,7 +490,7 @@ public:
 class TAC_return : public TAC
 {
 public:
-    TAC_return(const std::shared_ptr<Symbol> &a) : 
+    TAC_return(const std::shared_ptr<Symbol> a) : 
         TAC({a}) { }
     ~TAC_return() = default;
 

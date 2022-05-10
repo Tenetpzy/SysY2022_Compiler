@@ -39,7 +39,7 @@ std::shared_ptr<Symbol> Sym_environment_trie::get_symbol(const std::string &name
         return std::shared_ptr<Symbol>();
 }
 
-void Sym_environment_trie::add_symbol(const std::string &name, const std::shared_ptr<Symbol> &symbol)
+void Sym_environment_trie::add_symbol(const std::string &name, const std::shared_ptr<Symbol> symbol)
 {
     Sym_trie_node *node = env_list.back().get();
 

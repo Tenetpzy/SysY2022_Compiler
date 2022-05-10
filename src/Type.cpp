@@ -1,8 +1,8 @@
 #include "Type.h"
 
-Type_name Void_type::get_type_name() const
+Type_class Void_type::get_type_class() const
 {
-    return Type_name::T_void;
+    return Type_class::T_void;
 }
 
 size_t Void_type::get_size() const
@@ -10,7 +10,7 @@ size_t Void_type::get_size() const
     return 0;
 }
 
-bool Void_type::is_arith_type() const
+bool Void_type::is_base_var_type() const
 {
     return false;
 }
@@ -21,13 +21,13 @@ std::string Void_type::to_string() const
 }
 
 
-Reference_type::Reference_type(const std::shared_ptr<Type> &p) : base_type(p)
+Reference_type::Reference_type(const std::shared_ptr<Object_type> p) : base_type(p)
 {
 }
 
-Type_name Reference_type::get_type_name() const
+Type_class Reference_type::get_type_class() const
 {
-    return Type_name::T_reference;
+    return Type_class::T_reference;
 }
 
 size_t Reference_type::get_size() const
@@ -35,14 +35,19 @@ size_t Reference_type::get_size() const
     return 4;
 }
 
-bool Reference_type::is_arith_type() const
+bool Reference_type::is_base_var_type() const
 {
-    return base_type->is_arith_type();
+    return base_type->is_base_var_type();
 }
 
 std::string Reference_type::to_string() const
 {
     return base_type->to_string();
+}
+
+std::shared_ptr<Object_type> Reference_type::get_base_type() const
+{
+    return base_type;
 }
 
 
@@ -54,19 +59,19 @@ void Array_type::init_size()
     size *= base_type->get_size();
 }
 
-Array_type::Array_type(const std::shared_ptr<Object_type> &p, const std::vector<int> &d) : base_type(p), dim(d)
+Array_type::Array_type(const std::shared_ptr<Object_type> p, const std::vector<int> &d) : base_type(p), dim(d)
 {
     init_size();
 }
 
-Array_type::Array_type(const std::shared_ptr<Object_type> &p, std::vector<int> &&d) : base_type(p), dim(std::move(d))
+Array_type::Array_type(const std::shared_ptr<Object_type> p, std::vector<int> &&d) : base_type(p), dim(std::move(d))
 {
     init_size();
 }
 
-Type_name Array_type::get_type_name() const
+Type_class Array_type::get_type_class() const
 {
-    return Type_name::T_array;
+    return Type_class::T_array;
 }
 
 size_t Array_type::get_size() const
@@ -74,7 +79,7 @@ size_t Array_type::get_size() const
     return size;
 }
 
-bool Array_type::is_arith_type() const
+bool Array_type::is_base_var_type() const
 {
     return false;
 }
@@ -97,20 +102,20 @@ std::string Array_type::to_string() const
 }
 
 
-Function_type::Function_type(const std::shared_ptr<Type> &rtp, const std::vector<std::shared_ptr<Type>> &ptl) : return_type(rtp), param_type_list(ptl)
+Function_type::Function_type(const std::shared_ptr<Object_type> rtp, const std::vector<std::shared_ptr<Object_type>> &ptl) : return_type(rtp), param_type_list(ptl)
 {
 }
 
-Function_type::Function_type(const std::shared_ptr<Type> &rtp, std::vector<std::shared_ptr<Type>> &&ptl) : return_type(rtp), param_type_list(std::move(ptl))
+Function_type::Function_type(const std::shared_ptr<Object_type> rtp, std::vector<std::shared_ptr<Object_type>> &&ptl) : return_type(rtp), param_type_list(std::move(ptl))
 {
 }
 
-Type_name Function_type::get_type_name() const
+Type_class Function_type::get_type_class() const
 {
-    return Type_name::T_function;
+    return Type_class::T_function;
 }
 
-bool Function_type::is_arith_type() const
+bool Function_type::is_base_var_type() const
 {
     return false;
 }
@@ -136,12 +141,12 @@ size_t Int_type::get_size() const
     return 4;
 }
 
-Type_name Int_type::get_type_name() const
+Type_class Int_type::get_type_class() const
 {
-    return Type_name::T_int;
+    return Type_class::T_int;
 }
 
-bool Int_type::is_arith_type() const
+bool Int_type::is_base_var_type() const
 {
     return true;
 }
@@ -157,12 +162,12 @@ size_t Float_type::get_size() const
     return 4;
 }
 
-Type_name Float_type::get_type_name() const
+Type_class Float_type::get_type_class() const
 {
-    return Type_name::T_float;
+    return Type_class::T_float;
 }
 
-bool Float_type::is_arith_type() const
+bool Float_type::is_base_var_type() const
 {
     return true;
 }
@@ -174,9 +179,10 @@ std::string Float_type::to_string() const
 
 
 
-Type_name Type::type_max(Type_name t1, Type_name t2)
+std::shared_ptr<Object_type> Type::type_max(std::shared_ptr<Object_type> t1, std::shared_ptr<Object_type> t2)
 {
-    if (t1 == Type_name::T_float || t2 == Type_name::T_float)
-        return Type_name::T_float;
-    return Type_name::T_int;
+    if (t1->get_type_class() == Type_class::T_float || t2->get_type_class() == Type_class::T_float)
+        return std::make_shared<Float_type>();
+    else
+        return std::make_shared<Int_type>();
 }
