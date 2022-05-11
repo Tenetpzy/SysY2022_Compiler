@@ -15,7 +15,7 @@ enum class TAC_type
     // sub,
     // mul,
     // div,
-    // mod,
+    mod,
     // eq,
     // ne,
     // lt,
@@ -146,20 +146,20 @@ public:
 //     }
 // };
 
-// // a = b % c
-// // operands: a b c
-// class TAC_mod : public TAC
-// {
-// public:
-//     TAC_mod(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
-//         TAC({a, b, c}) { }
-//     ~TAC_mod() = default;
+// a = b % c
+// operands: a b c
+class TAC_mod : public TAC
+{
+public:
+    TAC_mod(const std::shared_ptr<Symbol> a, const std::shared_ptr<Symbol> b, const std::shared_ptr<Symbol> c) :
+        TAC({a, b, c}) { }
+    ~TAC_mod() = default;
 
-//     TAC_type tac_type() const override
-//     {
-//         return TAC_type::mod;
-//     }
-// };
+    TAC_type tac_type() const override
+    {
+        return TAC_type::mod;
+    }
+};
 
 // // a = (b == c)
 // // operands: a b c

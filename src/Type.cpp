@@ -1,18 +1,15 @@
 #include "Type.h"
+#include "Semantic.h"
+#include "Frontend_util.h"
 
 Type_class Void_type::get_type_class() const
 {
     return Type_class::T_void;
 }
 
-size_t Void_type::get_size() const
+int Void_type::get_size() const
 {
     return 0;
-}
-
-bool Void_type::is_base_var_type() const
-{
-    return false;
 }
 
 std::string Void_type::to_string() const
@@ -21,7 +18,7 @@ std::string Void_type::to_string() const
 }
 
 
-Reference_type::Reference_type(const std::shared_ptr<Object_type> p) : base_type(p)
+Reference_type::Reference_type(const std::shared_ptr<Type> p) : base_type(p)
 {
 }
 
@@ -30,22 +27,17 @@ Type_class Reference_type::get_type_class() const
     return Type_class::T_reference;
 }
 
-size_t Reference_type::get_size() const
+int Reference_type::get_size() const
 {
     return 4;
 }
 
-bool Reference_type::is_base_var_type() const
-{
-    return base_type->is_base_var_type();
-}
-
 std::string Reference_type::to_string() const
 {
-    return base_type->to_string();
+    return base_type->to_string() + "&";
 }
 
-std::shared_ptr<Object_type> Reference_type::get_base_type() const
+std::shared_ptr<Type> Reference_type::get_base_type() const
 {
     return base_type;
 }
@@ -53,18 +45,26 @@ std::shared_ptr<Object_type> Reference_type::get_base_type() const
 
 void Array_type::init_size()
 {
-    size = 1;
+    unsigned long long siz = 1;
     for (auto e : dim)
-        size *= e;
-    size *= base_type->get_size();
+        siz *= e;
+    siz *= base_type->get_size();
+    if (siz > INT32_MAX)
+        Frontend_util::report_error("数组过大");
+    size = (int)siz;
+
+    element_size.resize(dim.size());
+    element_size[dim.size() - 1] = base_type->get_size();
+    for (auto i = dim.size() - 1; i > 0; --i)
+        element_size[i - 1] = element_size[i] * dim[i];
 }
 
-Array_type::Array_type(const std::shared_ptr<Object_type> p, const std::vector<int> &d) : base_type(p), dim(d)
+Array_type::Array_type(const std::shared_ptr<Type> p, const std::vector<int> &d) : base_type(p), dim(d)
 {
     init_size();
 }
 
-Array_type::Array_type(const std::shared_ptr<Object_type> p, std::vector<int> &&d) : base_type(p), dim(std::move(d))
+Array_type::Array_type(const std::shared_ptr<Type> p, std::vector<int> &&d) : base_type(p), dim(std::move(d))
 {
     init_size();
 }
@@ -74,14 +74,9 @@ Type_class Array_type::get_type_class() const
     return Type_class::T_array;
 }
 
-size_t Array_type::get_size() const
+int Array_type::get_size() const
 {
     return size;
-}
-
-bool Array_type::is_base_var_type() const
-{
-    return false;
 }
 
 std::string Array_type::to_string() const
@@ -101,23 +96,43 @@ std::string Array_type::to_string() const
     return s;
 }
 
+// pos：访问下标列表的大小
+std::shared_ptr<Type> Array_type::get_access_element_type(const size_t pos) const
+{
+    if (pos > dim.size())
+        Frontend_util::report_internal_error("get_access_element_type overflow");
+    else if (pos == dim.size())  // 访问到数组元素
+        return base_type;
+    else  // 访问到子数组名
+    {
+        std::vector<int> sub;
+        for (size_t i = pos; i < dim.size(); ++i)
+            sub.push_back(dim[i]);
+        return std::make_shared<Array_type>(base_type, std::move(sub));
+    }
+}
 
-Function_type::Function_type(const std::shared_ptr<Object_type> rtp, const std::vector<std::shared_ptr<Object_type>> &ptl) : return_type(rtp), param_type_list(ptl)
+int Array_type::get_access_element_size(const size_t pos) const
+{
+    return element_size[pos];
+}
+
+size_t Array_type::get_dim_size() const
+{
+    return dim.size();
+}
+
+Function_type::Function_type(const std::shared_ptr<Type> rtp, const std::vector<std::shared_ptr<Type>> &ptl) : return_type(rtp), param_type_list(ptl)
 {
 }
 
-Function_type::Function_type(const std::shared_ptr<Object_type> rtp, std::vector<std::shared_ptr<Object_type>> &&ptl) : return_type(rtp), param_type_list(std::move(ptl))
+Function_type::Function_type(const std::shared_ptr<Type> rtp, std::vector<std::shared_ptr<Type>> &&ptl) : return_type(rtp), param_type_list(std::move(ptl))
 {
 }
 
 Type_class Function_type::get_type_class() const
 {
     return Type_class::T_function;
-}
-
-bool Function_type::is_base_var_type() const
-{
-    return false;
 }
 
 std::string Function_type::to_string() const
@@ -135,8 +150,13 @@ std::string Function_type::to_string() const
     return s;
 }
 
+int Function_type::get_size() const
+{
+    return 0;
+}
 
-size_t Int_type::get_size() const
+
+int Int_type::get_size() const
 {
     return 4;
 }
@@ -146,18 +166,13 @@ Type_class Int_type::get_type_class() const
     return Type_class::T_int;
 }
 
-bool Int_type::is_base_var_type() const
-{
-    return true;
-}
-
 std::string Int_type::to_string() const
 {
     return std::string("int");
 }
 
 
-size_t Float_type::get_size() const
+int Float_type::get_size() const
 {
     return 4;
 }
@@ -167,11 +182,6 @@ Type_class Float_type::get_type_class() const
     return Type_class::T_float;
 }
 
-bool Float_type::is_base_var_type() const
-{
-    return true;
-}
-
 std::string Float_type::to_string() const
 {
     return std::string("float");
@@ -179,10 +189,15 @@ std::string Float_type::to_string() const
 
 
 
-std::shared_ptr<Object_type> Type::type_max(std::shared_ptr<Object_type> t1, std::shared_ptr<Object_type> t2)
+std::shared_ptr<Type> Type::type_max(std::shared_ptr<Type> t1, std::shared_ptr<Type> t2)
 {
     if (t1->get_type_class() == Type_class::T_float || t2->get_type_class() == Type_class::T_float)
         return std::make_shared<Float_type>();
     else
         return std::make_shared<Int_type>();
+}
+
+bool Type::is_base_var_type(const std::shared_ptr<Type> type)
+{
+    return type->get_type_class() == Type_class::T_int || type->get_type_class() == Type_class::T_float;
 }

@@ -1,18 +1,23 @@
 #pragma once
 
-#include "Sym_environment.h"
-#include "TAC.h"
-#include "Semantic.h"
-#include "Symbol.h"
 #include <cstdio>
 #include <cstdarg>
 #include <utility>
 #include <list>
 #include <unordered_map>
-#include <functional>
+#include <memory>
 
 extern int yylineno;
 extern int yycolno;
+
+// forward declarations
+
+class Sym_environment;
+enum class Op_type;
+enum class Type_class;
+class Symbol;
+class TAC;
+class Type;
 
 class Frontend_util
 {
@@ -21,10 +26,7 @@ private:
     static std::unordered_map<Op_type, std::string> op_expr_str;
 
 private:
-    static Sym_environment* generate_sym_env()
-    {
-        return new Sym_environment_trie();
-    }
+    static Sym_environment* generate_sym_env();
 
 public:
     static Sym_environment& get_sym_env()
@@ -38,6 +40,12 @@ public:
     {
         return op_expr_str[op];
     }
+
+    static bool is_arith_op(const Op_type op);
+
+    static bool is_rel_op(const Op_type op);
+
+    static bool is_logic_op(const Op_type op);
 
     // 语义错误
     static void report_error(const char *fmt, ...)
@@ -86,16 +94,16 @@ public:
 class Type_converter
 {
 public:
-    using Type_converter_ret_type = std::pair<std::shared_ptr<Sym_operand>, std::list<std::shared_ptr<TAC>>>;
+    using Type_converter_ret_type = std::pair<std::shared_ptr<Symbol>, std::list<std::shared_ptr<TAC>>>;
 
 private:
-    static Type_converter_ret_type convert_int_to_float(const std::shared_ptr<Sym_operand> source)
+    static Type_converter_ret_type convert_int_to_float(const std::shared_ptr<Symbol> source)
     {
         // 暂不实现
         Frontend_util::report_internal_error("暂时不支持浮点运算。");
     }
 
-    static Type_converter_ret_type convert_float_to_int(const std::shared_ptr<Sym_operand> source)
+    static Type_converter_ret_type convert_float_to_int(const std::shared_ptr<Symbol> source)
     {
         // 暂不实现
         Frontend_util::report_internal_error("暂时不支持浮点运算。");
@@ -104,7 +112,7 @@ private:
 
 
 public: 
-//    using Convert_handler_type = std::unordered_map<std::pair<Type_class, Type_class>, std::function<Type_converter_ret_type(const std::shared_ptr<Sym_operand>)>>;
+//    using Convert_handler_type = std::unordered_map<std::pair<Type_class, Type_class>, std::function<Type_converter_ret_type(const std::shared_ptr<Symbol>)>>;
 
 private:
     // 把原类型和目标类型的pair映射到相应转化器
@@ -112,26 +120,7 @@ private:
 
 public:
 
-    static Type_converter_ret_type convert(const Type_class sourceType, const Type_class TargetType, const std::shared_ptr<Sym_operand> sourceSym)
-    {
-        // auto it = convert_handler.find(std::make_pair(sourceType, sourceType));
-
-        // // 没有找到类型转化器，直接返回该Symbol与空的TAC list
-        // if (it == convert_handler.end())
-        //     return std::make_pair(sourceSym, std::list<std::shared_ptr<TAC>>());
-        
-        // // 否则，调用对应的类型转化器
-        // return it->second(sourceSym);
-
-
-        // 简单点的做法
-        if (sourceType == Type_class::T_int && TargetType == Type_class::T_float)
-            return convert_int_to_float(sourceSym);
-        else if (sourceType == Type_class::T_float && TargetType == Type_class::T_int)
-            return convert_float_to_int(sourceSym);
-        else
-            return std::make_pair(sourceSym, std::list<std::shared_ptr<TAC>>());
-    }
+    static Type_converter_ret_type convert(const Type_class sourceType, const Type_class TargetType, const std::shared_ptr<Symbol> sourceSym);
 };
 
 
@@ -143,9 +132,5 @@ private:
     static unsigned long long label_counter;
 
 public:
-    static std::shared_ptr<Sym_operand> gen_expr_sym_object(std::shared_ptr<Object_type> type)
-    {
-        std::string name = "t" + std::to_string(++var_counter);
-        return std::make_shared<Sym_object>(type, std::move(name));
-    }
+    static std::shared_ptr<Symbol> gen_expr_sym_object(std::shared_ptr<Type> type);
 };

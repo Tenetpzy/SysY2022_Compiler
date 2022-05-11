@@ -1,9 +1,7 @@
 #pragma once
 
-#include <memory>
 #include <list>
 #include "Symbol.h"
-#include "Type.h"
 
 class TAC;
 
@@ -21,6 +19,7 @@ enum class Op_type
     geq, // >=
     eq,  // ==
     neq, // !=
+
     L_and, // &&
     L_or,  // ||
     L_not  // !
@@ -28,29 +27,25 @@ enum class Op_type
 
 enum class Expr_type
 {
-    Binary_arith_expr,  // ok
+    Binary_arith_rel_expr,  // ok
     Binary_logic_expr,
     Unary_arith_expr,  // ok
     Unary_logic_expr,
-    Const_expr,   // ok
-    Ident_expr,   // ok
-    Ident_ref_expr,   
-    Access_array_expr,
-    Access_element_expr,
-    Call_ret_expr,
-    Call_noret_expr
+    Primary_expr,  // ok
+    Ident_ref_expr,   // ok
+    Access_array_expr,  // ok
+    Call_expr
 };
-
 
 class Expr
 {
 protected:
-    std::shared_ptr<Sym_operand> value;   // 表达式值
+    std::shared_ptr<Symbol> value;   // 表达式值
 
 public:
 
     // 得到表达式值类型
-    std::shared_ptr<Object_type> value_type() const
+    std::shared_ptr<Type> value_type() const
     {
         return value->get_type();
     }
@@ -67,7 +62,7 @@ public:
     }
 
     // 得到表达式值
-    std::shared_ptr<Sym_operand> get_value()
+    std::shared_ptr<Symbol> get_value()
     {
         return value;
     }
@@ -91,7 +86,7 @@ public:
     virtual std::string to_string() const = 0;  // 编译器输出使用
 };
 
-class Binary_arith_expr : public Expr
+class Binary_arith_rel_expr : public Expr
 {
 private:
     std::list<std::shared_ptr<TAC>> reduce_tac;
@@ -100,8 +95,8 @@ private:
 
 public:
     // 构造函数中负责语义检查，reduce_tac和value的构造
-    Binary_arith_expr(const Op_type _op, const std::shared_ptr<Expr> e1, const std::shared_ptr<Expr> e2);
-    ~Binary_arith_expr() = default;
+    Binary_arith_rel_expr(const Op_type _op, const std::shared_ptr<Expr> e1, const std::shared_ptr<Expr> e2);
+    ~Binary_arith_rel_expr() = default;
 
     std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
     {
@@ -110,10 +105,7 @@ public:
 
     // binary_arith_expr 不需要额外的指令即可获得值
 
-    std::string to_string() const override
-    {
-        return exp[0]->to_string() + Frontend_util::op_to_expr_str(op) + exp[1]->to_string();
-    }
+    std::string to_string() const override;
 };
 
 class Unary_arith_expr : public Expr
@@ -132,47 +124,28 @@ public:
         return reduce_tac;
     }
 
-    std::string to_string() const override
-    {
-        return std::string() + Frontend_util::op_to_expr_str(op) + exp->to_string(); 
-    }
+    std::string to_string() const override;
 };
 
-// Ident_expr：表达式为一个指代变量的标识符
-class Ident_expr : public Expr
+// 表达式为一个变量或立即数
+class Primary_expr : public Expr
 {
 public:
 
-    // 语义检查由归约器完成
-    // 因为token为ident时，无法区分ident指代变量、函数or数组
-    Ident_expr(const std::shared_ptr<Sym_operand> ident)
-    {
-        value = ident;
-    }
-    ~Ident_expr() = default;
+    // Exp --> Number
+    // Exp --> Ident
 
-    // 指代一个变量的表达式，没有计算过程
-    std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
+    // Ident的语义检查由归约器实现
+    // 因为识别到一个Ident时，无法区别它是引用还是变量
+    // 而处理引用和变量的表达式类型不同
+    Primary_expr(const std::shared_ptr<Symbol> sym)
     {
-        return std::list<std::shared_ptr<TAC>>();
+        value = sym;
     }
 
-    std::string to_string() const override
-    {
-        return value->to_string();
-    }
-};
+    ~Primary_expr() = default;
 
-// 常量表达式（立即数）
-class Const_expr : public Expr
-{
-public:
-    Const_expr(const std::shared_ptr<Sym_operand> imm)
-    {
-        value = imm;
-    }
-    ~Const_expr() = default;
-
+    // 初等表达式，没有计算过程
     std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
     {
         return std::list<std::shared_ptr<TAC>>();
@@ -191,12 +164,12 @@ class Ident_ref_expr : public Expr
 private:
 
     // 引用使用指针实现，这个符号代表的变量应该是一个基本类型的引用
-    std::shared_ptr<Sym_object> pointer;
+    std::shared_ptr<Symbol> pointer;
 
     std::list<std::shared_ptr<TAC>> gen_val_tac;
 
 public:
-    Ident_ref_expr(const std::shared_ptr<Sym_object> ptr);
+    Ident_ref_expr(const std::shared_ptr<Symbol> ptr);
     ~Ident_ref_expr() = default;
 
     std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
@@ -214,8 +187,81 @@ public:
     {
         return pointer->to_string();
     }
-
 };
+
+class Array_access_list
+{
+private:
+    std::vector<std::shared_ptr<Expr>> access_list;
+
+public:
+    Array_access_list(const std::vector<std::shared_ptr<Expr>> &v) : access_list(v) {}
+    Array_access_list(std::vector<std::shared_ptr<Expr>> &&v) : access_list(v) {}
+    // default destructor, assign, move construct, move assign
+
+    const std::vector<std::shared_ptr<Expr>>& get_list() const
+    {
+        return access_list;
+    }
+
+    std::string to_string() const
+    {
+        std::string s;
+        for (auto &x : access_list)
+        {
+            s.push_back('[');
+            s.append(x->to_string());
+            s.push_back(']');
+        }
+        return s;
+    }
+};
+
+// 数组访问表达式, 如声明int a[2][2], 表达式为a，a[1]，a[i][j]
+// 如果是一个子数组，该表达式不可以作为左值
+// 否则，由数组是否为const变量决定它是否可作为左值
+class Access_array_expr : public Expr
+{
+private:
+    std::shared_ptr<Symbol> array;  // 访问的数组
+
+    std::shared_ptr<Symbol> array_addr;  // 数组地址
+    Array_access_list arr_access_list;
+
+    // 访问偏移量
+    // 当offset为空时，表达式直接引用了数组名
+    std::shared_ptr<Symbol> offset;
+
+    // 负责计算array_addr和offset
+    std::list<std::shared_ptr<TAC>> reduce_tac;
+
+    // 负责计算value
+    std::list<std::shared_ptr<TAC>> gen_val_tac;
+
+    // 进行数组访问表达式本身的合法性检查
+    void init();
+
+public:
+
+    // 传入的array要么是直接指代数组的符号，要么是数组的引用
+    Access_array_expr(std::shared_ptr<Symbol> arr, Array_access_list &&access) : array(arr), arr_access_list(access) { init(); }
+    Access_array_expr(std::shared_ptr<Symbol> arr, const Array_access_list &access) : array(arr), arr_access_list(access) { init(); }
+    ~Access_array_expr() = default;
+
+    std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
+    {
+        return reduce_tac;
+    }
+
+    std::list<std::shared_ptr<TAC>> gen_value_tac_list() const override
+    {
+        return gen_val_tac;
+    }
+};
+
+
+
+
 
 
 // class Lval_expr : public Expr

@@ -18,13 +18,7 @@ class Symbol
 public:
     virtual Sym_type get_sym_type() const = 0;
     virtual std::string to_string() const = 0;
-};
-
-// 作为表达式操作数的Symbol的接口
-class Sym_operand : public Symbol
-{
-public:
-    virtual std::shared_ptr<Object_type> get_type() const = 0;
+    virtual std::shared_ptr<Type> get_type() const = 0;
 };
 
 class Sym_function : public Symbol
@@ -49,6 +43,11 @@ public:
     {
         return name;
     }
+
+    std::shared_ptr<Type> get_type() const override
+    {
+        return func_type;
+    }
 };
 
 class Sym_label : public Symbol
@@ -71,23 +70,26 @@ public:
     {
         return name;
     }
+
+    // not used
+    std::shared_ptr<Type> get_type() const override;
 };
 
-class Sym_object : public Sym_operand
+class Sym_object : public Symbol
 {
 protected:
-    std::shared_ptr<Object_type> type;
+    std::shared_ptr<Type> type;
     std::string name;
     // scope
     // addr
 
 public:
-    Sym_object(const std::shared_ptr<Object_type> t) : type(t) {}
-    Sym_object(const std::shared_ptr<Object_type> t, const std::string &str) : type(t), name(str) {}
-    Sym_object(const std::shared_ptr<Object_type> t, std::string &&str) : type(t), name(str) {}
+    Sym_object(const std::shared_ptr<Type> t) : type(t) {}
+    Sym_object(const std::shared_ptr<Type> t, const std::string &str) : type(t), name(str) {}
+    Sym_object(const std::shared_ptr<Type> t, std::string &&str) : type(t), name(str) {}
     ~Sym_object() = default;
 
-    std::shared_ptr<Object_type> get_type() const override
+    std::shared_ptr<Type> get_type() const override
     {
         return type;
     }
@@ -112,7 +114,7 @@ class Sym_const_object : public Sym_object
 {
 };
 
-class Sym_int : public Sym_operand
+class Sym_int : public Symbol
 {
 private:
     int value;
@@ -126,7 +128,7 @@ public:
         return Sym_type::Sym_int;
     }
 
-    std::shared_ptr<Object_type> get_type() const override
+    std::shared_ptr<Type> get_type() const override
     {
         return std::make_shared<Int_type>();
     }
@@ -137,7 +139,7 @@ public:
     }
 };
 
-class Sym_float : public Sym_operand
+class Sym_float : public Symbol
 {
 private:
     float value;
@@ -151,7 +153,7 @@ public:
         return Sym_type::Sym_float;
     }
 
-    std::shared_ptr<Object_type> get_type() const override
+    std::shared_ptr<Type> get_type() const override
     {
         return std::make_shared<Float_type>();
     }

@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "Semantic_check.h"
+//#include "Semantic_check.h"
 
 // TEST(Test_bin_exp_check, all_int_var_sub_exp)
 // {

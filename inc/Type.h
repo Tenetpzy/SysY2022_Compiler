@@ -17,68 +17,68 @@ class Type
 {
 public:
     virtual Type_class get_type_class() const = 0;
-    virtual bool is_base_var_type() const = 0;
+    virtual int get_size() const = 0;
     virtual std::string to_string() const = 0;  // 编译器输出信息使用
 
     // 得到t1, t2的最大类型(目前为int提升为float)
-    static std::shared_ptr<Object_type> type_max(std::shared_ptr<Object_type> t1, std::shared_ptr<Object_type> t2);
-};
-
-class Object_type : public Type
-{
-public:
-    virtual size_t get_size() const = 0;
+    static std::shared_ptr<Type> type_max(std::shared_ptr<Type> t1, std::shared_ptr<Type> t2);
+    static bool is_base_var_type(const std::shared_ptr<Type> type);
 };
 
 // 兼容返回void的函数调用表达式，将void类型视为特殊的对象类型
-class Void_type : public Object_type
+class Void_type : public Type
 {
 public:
     Void_type() = default;
     ~Void_type() = default;
     Type_class get_type_class() const override;
-    size_t get_size() const override;
-    bool is_base_var_type() const override;
+    int get_size() const override;
     std::string to_string() const override;
 };
 
-class Reference_type : public Object_type
+class Reference_type : public Type
 {
 private:
-    std::shared_ptr<Object_type> base_type;
+    std::shared_ptr<Type> base_type;
 
 public:
-    Reference_type(const std::shared_ptr<Object_type> p);
+    Reference_type(const std::shared_ptr<Type> p);
     ~Reference_type() = default;
     Type_class get_type_class() const override;
-    size_t get_size() const override;  // 使用指针实现引用，则为平台上指针的大小
-    bool is_base_var_type() const override;
+    int get_size() const override;  // 使用指针实现引用，则为平台上指针的大小
     std::string to_string() const override;
 
-    std::shared_ptr<Object_type> get_base_type() const;
+    std::shared_ptr<Type> get_base_type() const;
     // something more...
     // get_base_type
     // get_base_type_class
 };
 
-class Array_type : public Object_type
+class Array_access_list;
+
+class Array_type : public Type
 {
 private:
-    std::shared_ptr<Object_type> base_type;
-    size_t size;
+    std::shared_ptr<Type> base_type;
+    int size;
     std::vector<int> dim; // 每一维度的大小
+    std::vector<int> element_size;  // 维度大小 后缀积
 
     void init_size();
 
 public:
-    Array_type(const std::shared_ptr<Object_type> p, const std::vector<int> &d);
-    Array_type(const std::shared_ptr<Object_type> p, std::vector<int> &&d);
+    Array_type(const std::shared_ptr<Type> p, const std::vector<int> &d);
+    Array_type(const std::shared_ptr<Type> p, std::vector<int> &&d);
     ~Array_type() = default;
 
     Type_class get_type_class() const override;
-    size_t get_size() const override;
-    bool is_base_var_type() const override;
+    int get_size() const override;
     std::string to_string() const override;
+
+    // 当访问列表作用于数组时，得到访问的元素类型
+    std::shared_ptr<Type> get_access_element_type(const size_t pos) const;
+    int get_access_element_size(const size_t pos) const;
+    size_t get_dim_size() const;
 
     // something more...
     // get_base_type
@@ -88,41 +88,39 @@ public:
 class Function_type : public Type
 {
 private:
-    std::shared_ptr<Object_type> return_type;
-    std::vector<std::shared_ptr<Object_type>> param_type_list;
+    std::shared_ptr<Type> return_type;
+    std::vector<std::shared_ptr<Type>> param_type_list;
 
 public:
-    Function_type(const std::shared_ptr<Object_type> rtp, const std::vector<std::shared_ptr<Object_type>> &ptl);
-    Function_type(const std::shared_ptr<Object_type> rtp, std::vector<std::shared_ptr<Object_type>> &&ptl);
+    Function_type(const std::shared_ptr<Type> rtp, const std::vector<std::shared_ptr<Type>> &ptl);
+    Function_type(const std::shared_ptr<Type> rtp, std::vector<std::shared_ptr<Type>> &&ptl);
     ~Function_type() = default;
 
     Type_class get_type_class() const override;
-    bool is_base_var_type() const override;
+    int get_size() const override;
     std::string to_string() const override;
 
     // something more...
 };
 
-class Int_type : public Object_type
+class Int_type : public Type
 {
 public:
     Int_type() = default;
     ~Int_type() = default;
 
-    size_t get_size() const override;
+    int get_size() const override;
     Type_class get_type_class() const override;
-    bool is_base_var_type() const override;
     std::string to_string() const override;
 };
 
-class Float_type : public Object_type
+class Float_type : public Type
 {
 public:
     Float_type() = default;
     ~Float_type() = default;
 
-    size_t get_size() const override;
+    int get_size() const override;
     Type_class get_type_class() const override;
-    bool is_base_var_type() const override;
     std::string to_string() const override;
 };
