@@ -16,6 +16,7 @@ public:
     // 查找名字为name的符号。不存在时返回指向空的指针
     virtual std::shared_ptr<Symbol> get_symbol(const std::string &name) const = 0;
     virtual void add_symbol(const std::string &name, const std::shared_ptr<Symbol> sym) = 0;
+    virtual int current_env_tag() const = 0;
 };
 
 class Sym_trie_node;
@@ -68,6 +69,7 @@ public:
     void pop_env() override;
     std::shared_ptr<Symbol> get_symbol(const std::string &name) const override;
     void add_symbol(const std::string &name, const std::shared_ptr<Symbol> sym) override;
+    int current_env_tag() const override;
 
 private:
     std::vector<std::unique_ptr<Sym_trie_node>> env_list; // 环境列表

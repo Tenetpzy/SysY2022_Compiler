@@ -62,3 +62,8 @@ void Sym_environment_trie::add_symbol(const std::string &name, const std::shared
 
     node->sym = symbol;
 }
+
+int Sym_environment_trie::current_env_tag() const
+{
+    return (int)env_list.size();
+}

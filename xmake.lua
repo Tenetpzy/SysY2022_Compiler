@@ -40,12 +40,12 @@ target("front_end")
     add_includedirs("inc")
 
 
-target("test")
-    set_kind("binary")
-    add_files("test/*.cpp")
-    add_includedirs("inc")
-    add_packages("gtest")
-    add_deps("front_end")
+-- target("test")
+--     set_kind("binary")
+--     add_files("test/*.cpp")
+--     add_includedirs("inc")
+--     add_packages("gtest")
+--     add_deps("front_end")
 
 target("compiler")
     set_kind("binary")

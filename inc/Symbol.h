@@ -19,6 +19,7 @@ public:
     virtual Sym_type get_sym_type() const = 0;
     virtual std::string to_string() const = 0;
     virtual std::shared_ptr<Type> get_type() const = 0;
+    virtual int get_env_tag() const = 0;
 };
 
 class Sym_function : public Symbol
@@ -48,6 +49,11 @@ public:
     {
         return func_type;
     }
+
+    int get_env_tag() const override
+    {
+        return 0;
+    }
 };
 
 class Sym_label : public Symbol
@@ -73,6 +79,11 @@ public:
 
     // not used
     std::shared_ptr<Type> get_type() const override;
+
+    int get_env_tag() const override
+    {
+        return 0;
+    }
 };
 
 class Sym_object : public Symbol
@@ -80,13 +91,14 @@ class Sym_object : public Symbol
 protected:
     std::shared_ptr<Type> type;
     std::string name;
+    int env_tag;
     // scope
     // addr
 
 public:
-    Sym_object(const std::shared_ptr<Type> t) : type(t) {}
-    Sym_object(const std::shared_ptr<Type> t, const std::string &str) : type(t), name(str) {}
-    Sym_object(const std::shared_ptr<Type> t, std::string &&str) : type(t), name(str) {}
+    Sym_object(const std::shared_ptr<Type> t, int env) : type(t) {}
+    Sym_object(const std::shared_ptr<Type> t, const std::string &str, int env) : type(t), name(str), env_tag(env) {}
+    Sym_object(const std::shared_ptr<Type> t, std::string &&str, int env) : type(t), name(str), env_tag(env) {}
     ~Sym_object() = default;
 
     std::shared_ptr<Type> get_type() const override
@@ -106,7 +118,14 @@ public:
 
     std::string to_string() const override
     {
-        return name;
+        std::string s;
+        s.append("S").append(std::to_string(env_tag)).append("_").append(name);
+        return s;
+    }
+
+    int get_env_tag() const override
+    {
+        return env_tag;
     }
 };
 
@@ -137,6 +156,11 @@ public:
     {
         return std::string("#") + std::to_string(value);
     }
+
+    int get_env_tag() const override
+    {
+        return 0;
+    }
 };
 
 class Sym_float : public Symbol
@@ -161,6 +185,11 @@ public:
     std::string to_string() const override
     {
         return std::string("#") + std::to_string(value);
+    }
+
+    int get_env_tag() const override
+    {
+        return 0;
     }
 };
 

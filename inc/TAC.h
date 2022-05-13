@@ -5,6 +5,7 @@
 #include <initializer_list>
 #include "Type.h"
 
+enum class Op_type;
 class Symbol;
 
 enum class TAC_type
@@ -54,6 +55,7 @@ public:
     ~TAC() = default;
 
     virtual TAC_type tac_type() const = 0;
+    virtual void print() const = 0;
 };
 
 class TAC_bin_arith : public TAC
@@ -69,6 +71,8 @@ public:
     {
         return TAC_type::bin_arith;
     }
+
+    void print() const override;
 };
 
 class TAC_bin_rel : public TAC
@@ -84,6 +88,8 @@ public:
     {
         return TAC_type::bin_rel;
     }
+
+    void print() const override;
 };
 
 // // a = b + c
@@ -159,6 +165,8 @@ public:
     {
         return TAC_type::mod;
     }
+
+    void print() const override;
 };
 
 // // a = (b == c)
@@ -264,6 +272,8 @@ public:
     {
         return TAC_type::load_offset;
     }
+
+    void print() const override;
 };
 
 // a[b] = c
@@ -279,6 +289,8 @@ public:
     {
         return TAC_type::store_offset;
     }
+
+    void print() const override;
 };
 
 // a = -b
@@ -294,6 +306,8 @@ public:
     {
         return TAC_type::neg;
     }
+
+    void print() const override;
 };
 
 // a = b
@@ -309,6 +323,8 @@ public:
     {
         return TAC_type::copy;
     }
+
+    void print() const override;
 };
 
 // a = &b
@@ -324,6 +340,8 @@ public:
     {
         return TAC_type::lea;
     }
+
+    void print() const override;
 };
 
 // a = *b
@@ -339,6 +357,8 @@ public:
     {
         return TAC_type::load;
     }
+
+    void print() const override;
 };
 
 // *a = b
@@ -354,6 +374,8 @@ public:
     {
         return TAC_type::store;
     }
+
+    void print() const override;
 };
 
 // goto a
@@ -369,6 +391,8 @@ public:
     {
         return TAC_type::goto_;
     }
+
+    void print() const override;
 };
 
 // if a goto b
@@ -384,6 +408,8 @@ public:
     {
         return TAC_type::if_;
     }
+
+    void print() const override;
 };
 
 // ifz a goto b
@@ -399,6 +425,8 @@ public:
     {
         return TAC_type::ifz;
     }
+
+    void print() const override;
 };
 
 // label a
@@ -414,6 +442,8 @@ public:
     {
         return TAC_type::label;
     }
+
+    void print() const override;
 };
 
 // declare int, float, or array
@@ -428,6 +458,8 @@ public:
     {
         return TAC_type::var_decl;
     }
+
+    void print() const override;
 };
 
 // formal int, float, or array
@@ -442,6 +474,8 @@ public:
     {
         return TAC_type::formal_decl;
     }
+
+    void print() const override;
 };
 
 // actual int, float, or array
@@ -456,6 +490,8 @@ public:
     {
         return TAC_type::auctual_decl;
     }
+
+    void print() const override;
 };
 
 // a = call b
@@ -470,6 +506,8 @@ public:
     {
         return TAC_type::call_ret;
     }
+
+    void print() const override;
 };
 
 // call a
@@ -484,6 +522,8 @@ public:
     {
         return TAC_type::call_noret;
     }
+
+    void print() const override;
 };
 
 // return a
@@ -498,6 +538,8 @@ public:
     {
         return TAC_type::return_;
     }
+
+    void print() const override;
 };
 
 // begin
@@ -511,6 +553,8 @@ public:
     {
         return TAC_type::fun_begin;
     }
+
+    void print() const override;
 };
 
 // end
@@ -524,4 +568,6 @@ public:
     {
         return TAC_type::fun_end;
     }
+
+    void print() const override;
 };

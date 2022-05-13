@@ -19,11 +19,10 @@ class Symbol;
 class TAC;
 class Type;
 
-class Frontend_util
+class Frontend_env
 {
 private:
     static Sym_environment *sym_env;
-    static std::unordered_map<Op_type, std::string> op_expr_str;
 
 private:
     static Sym_environment* generate_sym_env();
@@ -35,6 +34,14 @@ public:
             sym_env = generate_sym_env();
         return *sym_env;
     }
+};
+
+class Frontend_util
+{
+private:
+    static std::unordered_map<Op_type, std::string> op_expr_str;
+
+public:
 
     static const std::string& op_to_expr_str(const Op_type op)
     {

@@ -4,7 +4,7 @@
 #include "Type.h"
 #include "Symbol.h"
 
-Sym_environment* Frontend_util::sym_env = nullptr;
+Sym_environment* Frontend_env::sym_env = nullptr;
 
 std::unordered_map<Op_type, std::string> Frontend_util::op_expr_str = {
     {Op_type::add, "+"},
@@ -23,7 +23,7 @@ std::unordered_map<Op_type, std::string> Frontend_util::op_expr_str = {
     {Op_type::L_not, "!"}
 };
 
-Sym_environment* Frontend_util::generate_sym_env()
+Sym_environment* Frontend_env::generate_sym_env()
 {
     return new Sym_environment_trie();
 }
@@ -68,5 +68,5 @@ Type_converter::Type_converter_ret_type Type_converter::convert(const Type_class
 std::shared_ptr<Symbol> Tmp_symbol_generator::gen_expr_sym_object(std::shared_ptr<Type> type)
 {
     std::string name = "t" + std::to_string(++var_counter);
-    return std::make_shared<Sym_object>(type, std::move(name));
+    return std::make_shared<Sym_object>(type, std::move(name), Frontend_env::get_sym_env().current_env_tag());
 }

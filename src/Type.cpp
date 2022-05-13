@@ -34,7 +34,7 @@ int Reference_type::get_size() const
 
 std::string Reference_type::to_string() const
 {
-    return base_type->to_string() + "&";
+    return base_type->to_string() + " &";
 }
 
 std::shared_ptr<Type> Reference_type::get_base_type() const
