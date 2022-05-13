@@ -10,6 +10,9 @@ extern int yycolno;
 // 会插入到parser头文件和源文件中。parser头文件中的部分声明依赖这些C++头
 %code requires{
 #include "Semantic.h"
+
+// test
+#include <cstdio>
 }
 
 %require "3.2"
@@ -20,8 +23,8 @@ extern int yycolno;
 
 
 %token INT FLOAT VOID IF ELSE WHILE BREAK CONTINUE RETURN CONST
-%token <Op_type> EQ NE LE LT GE GT AND OR NOT
-%token <std::string> IDENT INTCONST FLOATCONST
+%token  EQ NE LE LT GE GT AND OR NOT
+%token  IDENT INTCONST FLOATCONST
 
 %left OR
 %left AND
@@ -70,39 +73,41 @@ extern int yycolno;
 
 %%
 
+Start : CompUnit;
+
 CompUnit :
 /* empty */  {}
-| CompUnit Decl  {}
+| CompUnit Decl  { /*printf("reduce a CompUnit with Decl.\n");*/ }
 | CompUnit FuncDef  {}
 ;
 
 Decl :
 ConstDecl {}
-| VarDecl {}
+| VarDecl { /*printf("reduce a Decl.\n");*/ }
 ;
 
 VarDecl :
-VarDeclItemList ';' {}
+VarDeclItemList ';' { /*printf("reduce a varDecl.\n");*/ }
 ;
 
 VarDeclItemList :
-Btype VarDeclItem  {}
+Btype VarDeclItem  { /*printf("reduce varDeclItemList.\n");*/ }
 | VarDeclItemList ',' VarDeclItem {}
 ;
 
 Btype :
-VOID {}
-| INT {}
+VOID { /*printf("reduce void.\n");*/ }
+| INT { /*printf("reduce int.\n");*/ }
 | FLOAT {}
 ;
 
 VarDeclItem :
-IDENT ArrayAccessList {}
+IDENT ArrayAccessList { /*printf("reduce a varDeclItem.\n");*/ }
 | IDENT ArrayAccessList '=' InitVal {}
 ;
 
 ArrayAccessList :
-/* empty */ {}
+/* empty */ { /*printf("reduce a empty accessList.\n");*/ }
 | ArrayAccessList '[' ArithExp ']' {}
 ;
 
@@ -130,14 +135,15 @@ Btype ConstDeclItem {}
 
 ConstDeclItem :
 IDENT ArrayAccessList '=' InitVal {}
+| IDENT ArrayAccessList {  /* 此处报错，更好的错误提示 */  }
 ;
 
 FuncDef :
-FunctionHead Block {}
+FunctionHead Block { /*printf("reduce FuncDef.\n");*/ }
 ;
 
 FunctionHead:
-Btype IDENT '(' ')' {}
+Btype IDENT '(' ')' { /*printf("reduce function head void param.\n");*/ }
 | Btype IDENT '(' FuncFParamList ')' {}
 ;
 
@@ -153,6 +159,7 @@ Btype IDENT {}
 
 Block :
 LB BlockItemList RB {}
+| LB RB {}
 ;
 
 LB : '{'
@@ -224,3 +231,13 @@ CondExp OR CondExp {}
 ;
 
 %%
+
+
+namespace yy
+{
+  // Report an error to the user.
+  auto parser::error (const std::string& msg) -> void
+  {
+    std::cerr << msg << '\n';
+  }
+}

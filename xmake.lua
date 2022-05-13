@@ -36,7 +36,7 @@ target("front_end")
             end
         end
     )
-    add_files("src/*.cpp")
+    add_files("src/*.cpp|main.cpp", "src/*.cc")
     add_includedirs("inc")
 
 
@@ -46,3 +46,10 @@ target("test")
     add_includedirs("inc")
     add_packages("gtest")
     add_deps("front_end")
+
+target("compiler")
+    set_kind("binary")
+    add_files("src/main.cpp")
+    add_deps("front_end")
+    set_targetdir("$(scriptdir)")
+    add_includedirs("inc")
