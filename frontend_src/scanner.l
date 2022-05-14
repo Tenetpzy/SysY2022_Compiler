@@ -39,8 +39,8 @@ int yycolno;  // 当前token的列号
 "||"  { return TOKEN::OR; }
 "!"  { return TOKEN::NOT; }
 
-[_A-Za-z]([_A-Za-z]|[0-9])* { return TOKEN::IDENT; }
-[0-9]* { return TOKEN::INTCONST; }
+[_A-Za-z]([_A-Za-z]|[0-9])* { yylval->emplace<std::string>(*yytext);  return TOKEN::IDENT; }
+[0-9]* {  yylval->emplace<std::string>(*yytext);  return TOKEN::INTCONST; }
 
 "\n" { yycolumn = 1; }
 [ \t\r]  {}

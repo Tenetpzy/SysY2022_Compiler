@@ -19,7 +19,11 @@ public:
     virtual Sym_type get_sym_type() const = 0;
     virtual std::string to_string() const = 0;
     virtual std::shared_ptr<Type> get_type() const = 0;
-    virtual int get_env_tag() const = 0;
+    virtual int get_env_tag() const = 0;  // 这个符号所在的作用域（环境）层级
+    virtual bool is_literal_num_sym() const  // 是否为常量符号
+    {
+        return false;
+    }
 };
 
 class Sym_function : public Symbol
@@ -161,6 +165,11 @@ public:
     {
         return 0;
     }
+
+    bool is_literal_num_sym() const override
+    {
+        return true;
+    }
 };
 
 class Sym_float : public Symbol
@@ -190,6 +199,11 @@ public:
     int get_env_tag() const override
     {
         return 0;
+    }
+
+    bool is_literal_num_sym() const override
+    {
+        return true;
     }
 };
 

@@ -10,6 +10,7 @@ extern int yycolno;
 // 会插入到parser头文件和源文件中。parser头文件中的部分声明依赖这些C++头
 %code requires{
 #include "Semantic.h"
+#include "Type.h"
 
 // test
 #include <cstdio>
@@ -23,8 +24,8 @@ extern int yycolno;
 
 
 %token INT FLOAT VOID IF ELSE WHILE BREAK CONTINUE RETURN CONST
-%token  EQ NE LE LT GE GT AND OR NOT
-%token  IDENT INTCONST FLOATCONST
+%token EQ NE LE LT GE GT AND OR NOT
+%token <std::string> IDENT INTCONST FLOATCONST
 
 %left OR
 %left AND
@@ -37,7 +38,7 @@ extern int yycolno;
 %nonassoc ELSE
 %right UMINUS
 
-%nterm Btype
+%nterm <std::shared_ptr<Type>> Btype
 %nterm CompUnit
 %nterm Decl
 %nterm ConstDecl
@@ -45,7 +46,7 @@ extern int yycolno;
 %nterm VarDecl
 %nterm VarDeclItemList
 %nterm VarDeclItem
-%nterm ArrayAccessList
+%nterm <std::vector<std::shared_ptr<Expr>>> ArrayAccessList
 %nterm InitVal
 %nterm InitValList
 
@@ -65,8 +66,9 @@ extern int yycolno;
 
 %nterm Stmt
 
-%nterm ArithExp
+%nterm <std::shared_ptr<Expr>> ArithExp
 %nterm CondExp
+%nterm PrimaryExp
 %nterm Lval
 %nterm FuncRParamList
 
@@ -106,9 +108,10 @@ IDENT ArrayAccessList { /*printf("reduce a varDeclItem.\n");*/ }
 | IDENT ArrayAccessList '=' InitVal {}
 ;
 
+/* std::vector<std::shared_ptr<Expr>> */
 ArrayAccessList :
 /* empty */ { /*printf("reduce a empty accessList.\n");*/ }
-| ArrayAccessList '[' ArithExp ']' {}
+| ArrayAccessList '[' ArithExp ']' { $$ = std::move($1); $$.push_back($3); }
 ;
 
 InitVal :
@@ -192,6 +195,7 @@ Lval '=' ArithExp ';' {}
 | RETURN ArithExp ';' {}
 ;
 
+/* std::shared_ptr<Expr> */
 ArithExp :
 ArithExp '+' ArithExp {}
 | ArithExp '-' ArithExp {}
@@ -227,7 +231,7 @@ CondExp OR CondExp {}
 | CondExp GE CondExp {}
 | CondExp GT CondExp {}
 | ArithExp {}
-| NOT CondExp {}
+| NOT CondExp %prec UMINUS {}
 ;
 
 %%

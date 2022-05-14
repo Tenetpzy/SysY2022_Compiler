@@ -98,28 +98,6 @@ std::string Unary_arith_expr::to_string() const
     return std::string() + Frontend_util::op_to_expr_str(op) + exp->to_string(); 
 }
 
-Ident_ref_expr::Ident_ref_expr(const std::shared_ptr<Symbol> ptr) : pointer(ptr)
-{   
-    std::shared_ptr<Type> base_type;
-
-    // 符号ptr的type应是一个引用type
-    if (auto rt = std::dynamic_pointer_cast<Reference_type>(pointer->get_type()))
-        base_type = rt->get_base_type();  // 得到引用的基类型
-    
-    // debug used
-    else
-        Frontend_util::report_internal_error("runtime error: Ident_ref_expr constructor.");
-
-
-    // 表达式值是引用对象值的拷贝
-    value = Tmp_symbol_generator::gen_expr_sym_object(base_type);
-    gen_val_tac.push_back(std::make_shared<TAC_var_decl>(value));
-
-    // value = *ptr
-    // 引用表达式作为右值使用时，创建一个临时对象(即此处的表达式值value)，并拷贝对象的值到value
-    gen_val_tac.push_back(std::make_shared<TAC_load>(value, pointer));
-}
-
 void Access_array_expr::init()
 {
     // 下标表达式语义检查
@@ -242,3 +220,24 @@ void Access_array_expr::init()
     }
 }
 
+// Ident_ref_expr::Ident_ref_expr(const std::shared_ptr<Symbol> ptr) : pointer(ptr)
+// {   
+//     std::shared_ptr<Type> base_type;
+
+//     // 符号ptr的type应是一个引用type
+//     if (auto rt = std::dynamic_pointer_cast<Reference_type>(pointer->get_type()))
+//         base_type = rt->get_base_type();  // 得到引用的基类型
+    
+//     // debug used
+//     else
+//         Frontend_util::report_internal_error("runtime error: Ident_ref_expr constructor.");
+
+
+//     // 表达式值是引用对象值的拷贝
+//     value = Tmp_symbol_generator::gen_expr_sym_object(base_type);
+//     gen_val_tac.push_back(std::make_shared<TAC_var_decl>(value));
+
+//     // value = *ptr
+//     // 引用表达式作为右值使用时，创建一个临时对象(即此处的表达式值value)，并拷贝对象的值到value
+//     gen_val_tac.push_back(std::make_shared<TAC_load>(value, pointer));
+// }

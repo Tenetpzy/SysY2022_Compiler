@@ -32,7 +32,7 @@ enum class Expr_type
     Unary_arith_expr,  // ok
     Unary_logic_expr,
     Primary_expr,  // ok
-    Ident_ref_expr,   // ok
+//    Ident_ref_expr,   // ok
     Access_array_expr,  // ok
     Call_expr
 };
@@ -65,6 +65,14 @@ public:
     std::shared_ptr<Symbol> get_value()
     {
         return value;
+    }
+
+    // 是否为字面常数表达式
+    // 常量传播使用
+    // 只有Primary_expr需要覆写
+    virtual bool is_literal_num_expr() const
+    {
+        return false;
     }
 
 //    virtual Expr_type expr_type() const = 0;   // 表达式值类别
@@ -155,37 +163,10 @@ public:
     {
         return value->to_string();
     }
-};
 
-// 变量引用表达式
-// 在函数内部，对声明为形如int &x的形参x的引用
-class Ident_ref_expr : public Expr
-{
-private:
-
-    // 引用使用指针实现，这个符号代表的变量应该是一个基本类型的引用
-    std::shared_ptr<Symbol> pointer;
-
-    std::list<std::shared_ptr<TAC>> gen_val_tac;
-
-public:
-    Ident_ref_expr(const std::shared_ptr<Symbol> ptr);
-    ~Ident_ref_expr() = default;
-
-    std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
+    bool is_literal_num_expr() const override
     {
-        return std::list<std::shared_ptr<TAC>>();
-    }
-
-    // 在语言层面封装了引用，得到引用表达式的值需要对指针解引用这一额外操作
-    std::list<std::shared_ptr<TAC>> gen_value_tac_list() const override
-    {
-        return gen_val_tac;
-    }
-
-    std::string to_string() const override
-    {
-        return pointer->to_string();
+        return value->is_literal_num_sym();
     }
 };
 
@@ -262,7 +243,37 @@ public:
 
 
 
+// 变量引用表达式
+// 在函数内部，对声明为形如int &x的形参x的引用
+// class Ident_ref_expr : public Expr
+// {
+// private:
 
+//     // 引用使用指针实现，这个符号代表的变量应该是一个基本类型的引用
+//     std::shared_ptr<Symbol> pointer;
+
+//     std::list<std::shared_ptr<TAC>> gen_val_tac;
+
+// public:
+//     Ident_ref_expr(const std::shared_ptr<Symbol> ptr);
+//     ~Ident_ref_expr() = default;
+
+//     std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
+//     {
+//         return std::list<std::shared_ptr<TAC>>();
+//     }
+
+//     // 在语言层面封装了引用，得到引用表达式的值需要对指针解引用这一额外操作
+//     std::list<std::shared_ptr<TAC>> gen_value_tac_list() const override
+//     {
+//         return gen_val_tac;
+//     }
+
+//     std::string to_string() const override
+//     {
+//         return pointer->to_string();
+//     }
+// };
 
 // class Lval_expr : public Expr
 // {

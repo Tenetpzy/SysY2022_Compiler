@@ -47,11 +47,12 @@
 #line 11 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
 
 #include "Semantic.h"
+#include "Type.h"
 
 // test
 #include <cstdio>
 
-#line 55 "parser.hh"
+#line 56 "parser.hh"
 
 
 # include <cstdlib> // std::abort
@@ -185,7 +186,7 @@
 #endif
 
 namespace yy {
-#line 189 "parser.hh"
+#line 190 "parser.hh"
 
 
 
@@ -366,7 +367,21 @@ namespace yy {
 
     /// An auxiliary type to compute the largest semantic type.
     union union_type
-    {    };
+    {
+      // ArithExp
+      char dummy1[sizeof (std::shared_ptr<Expr>)];
+
+      // Btype
+      char dummy2[sizeof (std::shared_ptr<Type>)];
+
+      // IDENT
+      // INTCONST
+      // FLOATCONST
+      char dummy3[sizeof (std::string)];
+
+      // ArrayAccessList
+      char dummy4[sizeof (std::vector<std::shared_ptr<Expr>>)];
+    };
 
     /// The size of the largest semantic type.
     enum { size = sizeof (union_type) };
@@ -478,6 +493,50 @@ namespace yy {
         : Base (t)
       {}
 #endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::shared_ptr<Expr>&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::shared_ptr<Expr>& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::shared_ptr<Type>&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::shared_ptr<Type>& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::string&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::string& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, std::vector<std::shared_ptr<Expr>>&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const std::vector<std::shared_ptr<Expr>>& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
 
       /// Destroy the symbol.
       ~basic_symbol ()
@@ -501,6 +560,24 @@ namespace yy {
         // Type destructor.
 switch (yytype)
     {
+      case 64: // ArithExp
+        value.template destroy< std::shared_ptr<Expr> > ();
+        break;
+
+      case 42: // Btype
+        value.template destroy< std::shared_ptr<Type> > ();
+        break;
+
+      case 22: // IDENT
+      case 23: // INTCONST
+      case 24: // FLOATCONST
+        value.template destroy< std::string > ();
+        break;
+
+      case 49: // ArrayAccessList
+        value.template destroy< std::vector<std::shared_ptr<Expr>> > ();
+        break;
+
       default:
         break;
     }
@@ -574,13 +651,26 @@ switch (yytype)
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == 0 || tok == token::INT || tok == token::FLOAT || tok == token::VOID || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::BREAK || tok == token::CONTINUE || tok == token::RETURN || tok == token::CONST || tok == token::EQ || tok == token::NE || tok == token::LE || tok == token::LT || tok == token::GE || tok == token::GT || tok == token::AND || tok == token::OR || tok == token::NOT || tok == token::IDENT || tok == token::INTCONST || tok == token::FLOATCONST || tok == 43 || tok == 45 || tok == 42 || tok == 47 || tok == 37 || tok == token::LOWER_THAN_ELSE || tok == token::UMINUS || tok == 59 || tok == 44 || tok == 61 || tok == 91 || tok == 93 || tok == 123 || tok == 125 || tok == 40 || tok == 41);
+        YY_ASSERT (tok == 0 || tok == token::INT || tok == token::FLOAT || tok == token::VOID || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::BREAK || tok == token::CONTINUE || tok == token::RETURN || tok == token::CONST || tok == token::EQ || tok == token::NE || tok == token::LE || tok == token::LT || tok == token::GE || tok == token::GT || tok == token::AND || tok == token::OR || tok == token::NOT || tok == 43 || tok == 45 || tok == 42 || tok == 47 || tok == 37 || tok == token::LOWER_THAN_ELSE || tok == token::UMINUS || tok == 59 || tok == 44 || tok == 61 || tok == 91 || tok == 93 || tok == 123 || tok == 125 || tok == 40 || tok == 41);
       }
 #else
       symbol_type (int tok)
         : super_type(token_type (tok))
       {
-        YY_ASSERT (tok == 0 || tok == token::INT || tok == token::FLOAT || tok == token::VOID || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::BREAK || tok == token::CONTINUE || tok == token::RETURN || tok == token::CONST || tok == token::EQ || tok == token::NE || tok == token::LE || tok == token::LT || tok == token::GE || tok == token::GT || tok == token::AND || tok == token::OR || tok == token::NOT || tok == token::IDENT || tok == token::INTCONST || tok == token::FLOATCONST || tok == 43 || tok == 45 || tok == 42 || tok == 47 || tok == 37 || tok == token::LOWER_THAN_ELSE || tok == token::UMINUS || tok == 59 || tok == 44 || tok == 61 || tok == 91 || tok == 93 || tok == 123 || tok == 125 || tok == 40 || tok == 41);
+        YY_ASSERT (tok == 0 || tok == token::INT || tok == token::FLOAT || tok == token::VOID || tok == token::IF || tok == token::ELSE || tok == token::WHILE || tok == token::BREAK || tok == token::CONTINUE || tok == token::RETURN || tok == token::CONST || tok == token::EQ || tok == token::NE || tok == token::LE || tok == token::LT || tok == token::GE || tok == token::GT || tok == token::AND || tok == token::OR || tok == token::NOT || tok == 43 || tok == 45 || tok == 42 || tok == 47 || tok == 37 || tok == token::LOWER_THAN_ELSE || tok == token::UMINUS || tok == 59 || tok == 44 || tok == 61 || tok == 91 || tok == 93 || tok == 123 || tok == 125 || tok == 40 || tok == 41);
+      }
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      symbol_type (int tok, std::string v)
+        : super_type(token_type (tok), std::move (v))
+      {
+        YY_ASSERT (tok == token::IDENT || tok == token::INTCONST || tok == token::FLOATCONST);
+      }
+#else
+      symbol_type (int tok, const std::string& v)
+        : super_type(token_type (tok), v)
+      {
+        YY_ASSERT (tok == token::IDENT || tok == token::INTCONST || tok == token::FLOATCONST);
       }
 #endif
     };
@@ -907,46 +997,46 @@ switch (yytype)
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_IDENT ()
+      make_IDENT (std::string v)
       {
-        return symbol_type (token::IDENT);
+        return symbol_type (token::IDENT, std::move (v));
       }
 #else
       static
       symbol_type
-      make_IDENT ()
+      make_IDENT (const std::string& v)
       {
-        return symbol_type (token::IDENT);
+        return symbol_type (token::IDENT, v);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_INTCONST ()
+      make_INTCONST (std::string v)
       {
-        return symbol_type (token::INTCONST);
+        return symbol_type (token::INTCONST, std::move (v));
       }
 #else
       static
       symbol_type
-      make_INTCONST ()
+      make_INTCONST (const std::string& v)
       {
-        return symbol_type (token::INTCONST);
+        return symbol_type (token::INTCONST, v);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
       static
       symbol_type
-      make_FLOATCONST ()
+      make_FLOATCONST (std::string v)
       {
-        return symbol_type (token::FLOATCONST);
+        return symbol_type (token::FLOATCONST, std::move (v));
       }
 #else
       static
       symbol_type
-      make_FLOATCONST ()
+      make_FLOATCONST (const std::string& v)
       {
-        return symbol_type (token::FLOATCONST);
+        return symbol_type (token::FLOATCONST, v);
       }
 #endif
 #if 201103L <= YY_CPLUSPLUS
@@ -1293,7 +1383,7 @@ switch (yytype)
 
 
 } // yy
-#line 1297 "parser.hh"
+#line 1387 "parser.hh"
 
 
 
