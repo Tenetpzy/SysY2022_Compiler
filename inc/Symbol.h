@@ -8,7 +8,6 @@ enum class Sym_type
     Sym_int,
     Sym_float,
     Sym_object,
-    Sym_const_object,
     Sym_function,
     Sym_label
 };
@@ -24,6 +23,11 @@ public:
     {
         return false;
     }
+
+    static bool is_literal_num_sym_type(const Sym_type type)
+    {
+        return type == Sym_type::Sym_int || type == Sym_type::Sym_float;
+    }
 };
 
 class Sym_function : public Symbol
@@ -36,7 +40,7 @@ private:
 public:
     Sym_function(const std::shared_ptr<Function_type> fun_type) : func_type(fun_type) {}
     Sym_function(const std::shared_ptr<Function_type> fun_type, const std::string &str) : func_type(fun_type), name(str) {}
-    Sym_function(const std::shared_ptr<Function_type> fun_type, std::string &&str) : func_type(fun_type), name(str) {}
+    Sym_function(const std::shared_ptr<Function_type> fun_type, std::string &&str) : func_type(fun_type), name(std::move(str)) {}
     ~Sym_function() = default;
 
     Sym_type get_sym_type() const override
@@ -68,7 +72,7 @@ private:
 public:
     Sym_label() = default;
     Sym_label(const std::string &str) : name(str) {}
-    Sym_label(std::string &&str) : name(str) {}
+    Sym_label(std::string &&str) : name(std::move(str)) {}
     ~Sym_label() = default;
 
     Sym_type get_sym_type() const override
@@ -100,9 +104,9 @@ protected:
     // addr
 
 public:
-    Sym_object(const std::shared_ptr<Type> t, int env) : type(t) {}
+    Sym_object(const std::shared_ptr<Type> t, int env) : type(t), env_tag(env) {}
     Sym_object(const std::shared_ptr<Type> t, const std::string &str, int env) : type(t), name(str), env_tag(env) {}
-    Sym_object(const std::shared_ptr<Type> t, std::string &&str, int env) : type(t), name(str), env_tag(env) {}
+    Sym_object(const std::shared_ptr<Type> t, std::string &&str, int env) : type(t), name(std::move(str)), env_tag(env) {}
     ~Sym_object() = default;
 
     std::shared_ptr<Type> get_type() const override
@@ -131,10 +135,6 @@ public:
     {
         return env_tag;
     }
-};
-
-class Sym_const_object : public Sym_object
-{
 };
 
 class Sym_int : public Symbol
@@ -169,6 +169,11 @@ public:
     bool is_literal_num_sym() const override
     {
         return true;
+    }
+
+    int get_value() const
+    {
+        return value;
     }
 };
 
@@ -205,7 +210,14 @@ public:
     {
         return true;
     }
+
+    float get_value() const
+    {
+        return value;
+    }
 };
+
+
 
 // template <typename T>
 // class Sym_imm : public Symbol

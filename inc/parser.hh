@@ -48,11 +48,13 @@
 
 #include "Semantic.h"
 #include "Type.h"
+#include "Frontend_util.h"
+#include "Symbol.h"
 
 // test
 #include <cstdio>
 
-#line 56 "parser.hh"
+#line 58 "parser.hh"
 
 
 # include <cstdlib> // std::abort
@@ -186,7 +188,7 @@
 #endif
 
 namespace yy {
-#line 190 "parser.hh"
+#line 192 "parser.hh"
 
 
 
@@ -368,19 +370,26 @@ namespace yy {
     /// An auxiliary type to compute the largest semantic type.
     union union_type
     {
+      // VarDeclItemList
+      char dummy1[sizeof (Var_decl)];
+
+      // VarDeclItem
+      char dummy2[sizeof (Var_decl_item)];
+
       // ArithExp
-      char dummy1[sizeof (std::shared_ptr<Expr>)];
+      // Lval
+      char dummy3[sizeof (std::shared_ptr<Expr>)];
 
       // Btype
-      char dummy2[sizeof (std::shared_ptr<Type>)];
+      char dummy4[sizeof (std::shared_ptr<Type>)];
 
       // IDENT
       // INTCONST
       // FLOATCONST
-      char dummy3[sizeof (std::string)];
+      char dummy5[sizeof (std::string)];
 
       // ArrayAccessList
-      char dummy4[sizeof (std::vector<std::shared_ptr<Expr>>)];
+      char dummy6[sizeof (std::vector<std::shared_ptr<Expr>>)];
     };
 
     /// The size of the largest semantic type.
@@ -494,6 +503,28 @@ namespace yy {
       {}
 #endif
 #if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Var_decl&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Var_decl& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
+      basic_symbol (typename Base::kind_type t, Var_decl_item&& v)
+        : Base (t)
+        , value (std::move (v))
+      {}
+#else
+      basic_symbol (typename Base::kind_type t, const Var_decl_item& v)
+        : Base (t)
+        , value (v)
+      {}
+#endif
+#if 201103L <= YY_CPLUSPLUS
       basic_symbol (typename Base::kind_type t, std::shared_ptr<Expr>&& v)
         : Base (t)
         , value (std::move (v))
@@ -560,7 +591,16 @@ namespace yy {
         // Type destructor.
 switch (yytype)
     {
+      case 47: // VarDeclItemList
+        value.template destroy< Var_decl > ();
+        break;
+
+      case 48: // VarDeclItem
+        value.template destroy< Var_decl_item > ();
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.template destroy< std::shared_ptr<Expr> > ();
         break;
 
@@ -1383,7 +1423,7 @@ switch (yytype)
 
 
 } // yy
-#line 1387 "parser.hh"
+#line 1427 "parser.hh"
 
 
 

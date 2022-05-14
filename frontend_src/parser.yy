@@ -11,6 +11,8 @@ extern int yycolno;
 %code requires{
 #include "Semantic.h"
 #include "Type.h"
+#include "Frontend_util.h"
+#include "Symbol.h"
 
 // test
 #include <cstdio>
@@ -44,8 +46,8 @@ extern int yycolno;
 %nterm ConstDecl
 
 %nterm VarDecl
-%nterm VarDeclItemList
-%nterm VarDeclItem
+%nterm <Var_decl> VarDeclItemList
+%nterm <Var_decl_item> VarDeclItem
 %nterm <std::vector<std::shared_ptr<Expr>>> ArrayAccessList
 %nterm InitVal
 %nterm InitValList
@@ -66,10 +68,8 @@ extern int yycolno;
 
 %nterm Stmt
 
-%nterm <std::shared_ptr<Expr>> ArithExp
+%nterm <std::shared_ptr<Expr>> ArithExp Lval
 %nterm CondExp
-%nterm PrimaryExp
-%nterm Lval
 %nterm FuncRParamList
 
 
@@ -85,26 +85,29 @@ CompUnit :
 
 Decl :
 ConstDecl {}
-| VarDecl { /*printf("reduce a Decl.\n");*/ }
+| VarDecl {  }
 ;
 
 VarDecl :
-VarDeclItemList ';' { /*printf("reduce a varDecl.\n");*/ }
+VarDeclItemList ';' { Frontend_env::append_glob_var_decl($1.get_decl_tac_list()); }
 ;
 
+/* Var_decl */
 VarDeclItemList :
-Btype VarDeclItem  { /*printf("reduce varDeclItemList.\n");*/ }
-| VarDeclItemList ',' VarDeclItem {}
+Btype VarDeclItem  { $$ = Var_decl($1, $2); }
+| VarDeclItemList ',' VarDeclItem { $$ = std::move(Var_decl($1, $3)); }
 ;
 
+/* <std::shared_ptr<Type>> */
 Btype :
-VOID { /*printf("reduce void.\n");*/ }
-| INT { /*printf("reduce int.\n");*/ }
-| FLOAT {}
+VOID { $$ = std::make_shared<Void_type>(); }
+| INT { $$ = std::make_shared<Int_type>(); }
+| FLOAT { $$ = std::make_shared<Float_type>(); }
 ;
 
+/* Var_decl_item */
 VarDeclItem :
-IDENT ArrayAccessList { /*printf("reduce a varDeclItem.\n");*/ }
+IDENT ArrayAccessList { $$ = Var_decl_item(std::move($1), std::move($2)); }
 | IDENT ArrayAccessList '=' InitVal {}
 ;
 
@@ -202,14 +205,14 @@ ArithExp '+' ArithExp {}
 | ArithExp '*' ArithExp {}
 | ArithExp '/' ArithExp {}
 | ArithExp '%' ArithExp {}
-| Lval {}
+| Lval { $$ = $1; }
 | '+' ArithExp %prec UMINUS {}
 | '-' ArithExp %prec UMINUS {}
 | IDENT '(' ')' {}
 | IDENT '(' FuncRParamList ')' {}
 | '(' ArithExp ')' {}
-| INTCONST {}
-| FLOATCONST {}
+| INTCONST { $$ = std::make_shared<Primary_expr>($1, Sym_type::Sym_int); }
+| FLOATCONST { $$ = std::make_shared<Primary_expr>($1, Sym_type::Sym_float); }
 ;
 
 FuncRParamList :
@@ -218,7 +221,17 @@ ArithExp {}
 ;
 
 Lval :
-IDENT ArrayAccessList {}
+IDENT ArrayAccessList
+{
+	if ($2.empty())
+	{
+		$$ = std::make_shared<Primary_expr>($1, Sym_type::Sym_object);
+	}
+	else
+	{
+		$$ = std::make_shared<Access_array_expr>($1, Array_access_list(std::move($2)));
+	}
+}
 ;
 
 CondExp :

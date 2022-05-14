@@ -19,10 +19,18 @@ public:
     virtual Type_class get_type_class() const = 0;
     virtual int get_size() const = 0;
     virtual std::string to_string() const = 0;  // 编译器输出信息使用
+    virtual bool is_base_var_type() const
+    {
+        return false;
+    }
+
+    virtual bool is_const_type() const
+    {
+        return false;
+    }
 
     // 得到t1, t2的最大类型(目前为int提升为float)
     static std::shared_ptr<Type> type_max(std::shared_ptr<Type> t1, std::shared_ptr<Type> t2);
-    static bool is_base_var_type(const std::shared_ptr<Type> type);
 };
 
 // 兼容返回void的函数调用表达式，将void类型视为特殊的对象类型
@@ -53,8 +61,6 @@ public:
     // get_base_type
     // get_base_type_class
 };
-
-class Array_access_list;
 
 class Array_type : public Type
 {
@@ -112,6 +118,11 @@ public:
     int get_size() const override;
     Type_class get_type_class() const override;
     std::string to_string() const override;
+
+    bool is_base_var_type() const override
+    {
+        return true;
+    }
 };
 
 class Float_type : public Type
@@ -123,4 +134,33 @@ public:
     int get_size() const override;
     Type_class get_type_class() const override;
     std::string to_string() const override;
+
+    bool is_base_var_type() const override
+    {
+        return true;
+    }
+};
+
+class Const_type : public Type
+{
+private:
+    std::shared_ptr<Type> base_type;  // const 修饰的类型
+
+public:
+    Const_type(const std::shared_ptr<Type> baseType);
+    ~Const_type() = default;
+
+    int get_size() const override;
+    Type_class get_type_class() const override;
+    std::string to_string() const override;
+
+    bool is_base_var_type() const override
+    {
+        return base_type->is_base_var_type();
+    }
+
+    bool is_const_type() const override
+    {
+        return true;
+    }
 };

@@ -153,7 +153,16 @@ namespace yy {
   {
     switch (this->type_get ())
     {
+      case 47: // VarDeclItemList
+        value.move< Var_decl > (std::move (that.value));
+        break;
+
+      case 48: // VarDeclItem
+        value.move< Var_decl_item > (std::move (that.value));
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.move< std::shared_ptr<Expr> > (std::move (that.value));
         break;
 
@@ -185,7 +194,16 @@ namespace yy {
   {
     switch (this->type_get ())
     {
+      case 47: // VarDeclItemList
+        value.copy< Var_decl > (YY_MOVE (that.value));
+        break;
+
+      case 48: // VarDeclItem
+        value.copy< Var_decl_item > (YY_MOVE (that.value));
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.copy< std::shared_ptr<Expr> > (YY_MOVE (that.value));
         break;
 
@@ -225,7 +243,16 @@ namespace yy {
     super_type::move (s);
     switch (this->type_get ())
     {
+      case 47: // VarDeclItemList
+        value.move< Var_decl > (YY_MOVE (s.value));
+        break;
+
+      case 48: // VarDeclItem
+        value.move< Var_decl_item > (YY_MOVE (s.value));
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.move< std::shared_ptr<Expr> > (YY_MOVE (s.value));
         break;
 
@@ -333,7 +360,16 @@ namespace yy {
   {
     switch (that.type_get ())
     {
+      case 47: // VarDeclItemList
+        value.YY_MOVE_OR_COPY< Var_decl > (YY_MOVE (that.value));
+        break;
+
+      case 48: // VarDeclItem
+        value.YY_MOVE_OR_COPY< Var_decl_item > (YY_MOVE (that.value));
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.YY_MOVE_OR_COPY< std::shared_ptr<Expr> > (YY_MOVE (that.value));
         break;
 
@@ -366,7 +402,16 @@ namespace yy {
   {
     switch (that.type_get ())
     {
+      case 47: // VarDeclItemList
+        value.move< Var_decl > (YY_MOVE (that.value));
+        break;
+
+      case 48: // VarDeclItem
+        value.move< Var_decl_item > (YY_MOVE (that.value));
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.move< std::shared_ptr<Expr> > (YY_MOVE (that.value));
         break;
 
@@ -399,7 +444,16 @@ namespace yy {
     state = that.state;
     switch (that.type_get ())
     {
+      case 47: // VarDeclItemList
+        value.copy< Var_decl > (that.value);
+        break;
+
+      case 48: // VarDeclItem
+        value.copy< Var_decl_item > (that.value);
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.copy< std::shared_ptr<Expr> > (that.value);
         break;
 
@@ -430,7 +484,16 @@ namespace yy {
     state = that.state;
     switch (that.type_get ())
     {
+      case 47: // VarDeclItemList
+        value.move< Var_decl > (that.value);
+        break;
+
+      case 48: // VarDeclItem
+        value.move< Var_decl_item > (that.value);
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         value.move< std::shared_ptr<Expr> > (that.value);
         break;
 
@@ -692,7 +755,16 @@ namespace yy {
          when using variants.  */
       switch (yyr1_[yyn])
     {
+      case 47: // VarDeclItemList
+        yylhs.value.emplace< Var_decl > ();
+        break;
+
+      case 48: // VarDeclItem
+        yylhs.value.emplace< Var_decl_item > ();
+        break;
+
       case 64: // ArithExp
+      case 65: // Lval
         yylhs.value.emplace< std::shared_ptr<Expr> > ();
         break;
 
@@ -727,455 +799,464 @@ namespace yy {
   case 3:
 #line 81 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
              {}
-#line 731 "parser.cc"
+#line 803 "parser.cc"
     break;
 
   case 4:
 #line 82 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
                  { /*printf("reduce a CompUnit with Decl.\n");*/ }
-#line 737 "parser.cc"
+#line 809 "parser.cc"
     break;
 
   case 5:
 #line 83 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
                     {}
-#line 743 "parser.cc"
+#line 815 "parser.cc"
     break;
 
   case 6:
 #line 87 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
           {}
-#line 749 "parser.cc"
+#line 821 "parser.cc"
     break;
 
   case 7:
 #line 88 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-          { /*printf("reduce a Decl.\n");*/ }
-#line 755 "parser.cc"
+          {  }
+#line 827 "parser.cc"
     break;
 
   case 8:
 #line 92 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                    { /*printf("reduce a varDecl.\n");*/ }
-#line 761 "parser.cc"
-    break;
-
-  case 9:
-#line 96 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                   { /*printf("reduce varDeclItemList.\n");*/ }
-#line 767 "parser.cc"
-    break;
-
-  case 10:
-#line 97 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                  {}
-#line 773 "parser.cc"
-    break;
-
-  case 11:
-#line 101 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-     { /*printf("reduce void.\n");*/ }
-#line 779 "parser.cc"
-    break;
-
-  case 12:
-#line 102 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-      { /*printf("reduce int.\n");*/ }
-#line 785 "parser.cc"
-    break;
-
-  case 13:
-#line 103 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-        {}
-#line 791 "parser.cc"
-    break;
-
-  case 14:
-#line 107 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      { /*printf("reduce a varDeclItem.\n");*/ }
-#line 797 "parser.cc"
-    break;
-
-  case 15:
-#line 108 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                    {}
-#line 803 "parser.cc"
-    break;
-
-  case 16:
-#line 113 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-            { /*printf("reduce a empty accessList.\n");*/ }
-#line 809 "parser.cc"
-    break;
-
-  case 17:
-#line 114 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                   { yylhs.value.as < std::vector<std::shared_ptr<Expr>> > () = std::move(yystack_[3].value.as < std::vector<std::shared_ptr<Expr>> > ()); yylhs.value.as < std::vector<std::shared_ptr<Expr>> > ().push_back(yystack_[1].value.as < std::shared_ptr<Expr> > ()); }
-#line 815 "parser.cc"
-    break;
-
-  case 18:
-#line 118 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-         {}
-#line 821 "parser.cc"
-    break;
-
-  case 19:
-#line 119 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
-#line 827 "parser.cc"
-    break;
-
-  case 20:
-#line 122 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-          {}
+                    { Frontend_env::append_glob_var_decl(yystack_[1].value.as < Var_decl > ().get_decl_tac_list()); }
 #line 833 "parser.cc"
     break;
 
-  case 21:
-#line 126 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-        {}
+  case 9:
+#line 97 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                   { yylhs.value.as < Var_decl > () = Var_decl(yystack_[1].value.as < std::shared_ptr<Type> > (), yystack_[0].value.as < Var_decl_item > ()); }
 #line 839 "parser.cc"
     break;
 
-  case 22:
-#line 127 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                          {}
+  case 10:
+#line 98 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                  { yylhs.value.as < Var_decl > () = std::move(Var_decl(yystack_[2].value.as < Var_decl > (), yystack_[0].value.as < Var_decl_item > ())); }
 #line 845 "parser.cc"
     break;
 
-  case 23:
-#line 131 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                            {}
+  case 11:
+#line 103 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+     { yylhs.value.as < std::shared_ptr<Type> > () = std::make_shared<Void_type>(); }
 #line 851 "parser.cc"
     break;
 
-  case 24:
-#line 135 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                    {}
+  case 12:
+#line 104 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+      { yylhs.value.as < std::shared_ptr<Type> > () = std::make_shared<Int_type>(); }
 #line 857 "parser.cc"
     break;
 
-  case 25:
-#line 136 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                      {}
+  case 13:
+#line 105 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+        { yylhs.value.as < std::shared_ptr<Type> > () = std::make_shared<Float_type>(); }
 #line 863 "parser.cc"
     break;
 
-  case 26:
-#line 140 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                  {}
+  case 14:
+#line 110 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      { yylhs.value.as < Var_decl_item > () = Var_decl_item(std::move(yystack_[1].value.as < std::string > ()), std::move(yystack_[0].value.as < std::vector<std::shared_ptr<Expr>> > ())); }
 #line 869 "parser.cc"
     break;
 
-  case 27:
-#line 141 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                        {  /* 此处报错，更好的错误提示 */  }
+  case 15:
+#line 111 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                    {}
 #line 875 "parser.cc"
     break;
 
-  case 28:
-#line 145 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                   { /*printf("reduce FuncDef.\n");*/ }
+  case 16:
+#line 116 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+            { /*printf("reduce a empty accessList.\n");*/ }
 #line 881 "parser.cc"
     break;
 
-  case 29:
-#line 149 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                    { /*printf("reduce function head void param.\n");*/ }
+  case 17:
+#line 117 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                   { yylhs.value.as < std::vector<std::shared_ptr<Expr>> > () = std::move(yystack_[3].value.as < std::vector<std::shared_ptr<Expr>> > ()); yylhs.value.as < std::vector<std::shared_ptr<Expr>> > ().push_back(yystack_[1].value.as < std::shared_ptr<Expr> > ()); }
 #line 887 "parser.cc"
     break;
 
-  case 30:
-#line 150 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                     {}
+  case 18:
+#line 121 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+         {}
 #line 893 "parser.cc"
     break;
 
-  case 31:
-#line 154 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-           {}
+  case 19:
+#line 122 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      {}
 #line 899 "parser.cc"
     break;
 
-  case 32:
-#line 155 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                {}
+  case 20:
+#line 125 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+          {}
 #line 905 "parser.cc"
     break;
 
-  case 33:
-#line 159 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-            {}
+  case 21:
+#line 129 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+        {}
 #line 911 "parser.cc"
     break;
 
-  case 34:
-#line 160 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                      {}
+  case 22:
+#line 130 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                          {}
 #line 917 "parser.cc"
     break;
 
-  case 35:
-#line 164 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                    {}
+  case 23:
+#line 134 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                            {}
 #line 923 "parser.cc"
     break;
 
-  case 36:
-#line 165 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-        {}
+  case 24:
+#line 138 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                    {}
 #line 929 "parser.cc"
     break;
 
-  case 39:
-#line 175 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-          {}
+  case 25:
+#line 139 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                      {}
 #line 935 "parser.cc"
     break;
 
-  case 40:
-#line 176 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                          {}
+  case 26:
+#line 143 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                  {}
 #line 941 "parser.cc"
     break;
 
-  case 41:
-#line 180 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-     {}
+  case 27:
+#line 144 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                        {  /* 此处报错，更好的错误提示 */  }
 #line 947 "parser.cc"
     break;
 
-  case 42:
-#line 181 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-       {}
+  case 28:
+#line 148 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                   { /*printf("reduce FuncDef.\n");*/ }
 #line 953 "parser.cc"
     break;
 
-  case 43:
-#line 185 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
+  case 29:
+#line 152 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                    { /*printf("reduce function head void param.\n");*/ }
 #line 959 "parser.cc"
     break;
 
-  case 44:
-#line 186 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-      {}
+  case 30:
+#line 153 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                     {}
 #line 965 "parser.cc"
     break;
 
-  case 45:
-#line 187 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-               {}
+  case 31:
+#line 157 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+           {}
 #line 971 "parser.cc"
     break;
 
-  case 46:
-#line 188 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-        {}
+  case 32:
+#line 158 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                {}
 #line 977 "parser.cc"
     break;
 
-  case 47:
-#line 189 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                                 {}
+  case 33:
+#line 162 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+            {}
 #line 983 "parser.cc"
     break;
 
-  case 48:
-#line 190 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                                    {}
+  case 34:
+#line 163 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                      {}
 #line 989 "parser.cc"
     break;
 
-  case 49:
-#line 191 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                             {}
+  case 35:
+#line 167 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                    {}
 #line 995 "parser.cc"
     break;
 
-  case 50:
-#line 192 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-            {}
+  case 36:
+#line 168 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+        {}
 #line 1001 "parser.cc"
     break;
 
-  case 51:
-#line 193 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-               {}
+  case 39:
+#line 178 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+          {}
 #line 1007 "parser.cc"
     break;
 
-  case 52:
-#line 194 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-             {}
+  case 40:
+#line 179 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                          {}
 #line 1013 "parser.cc"
     break;
 
-  case 53:
-#line 195 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
+  case 41:
+#line 183 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+     {}
 #line 1019 "parser.cc"
     break;
 
-  case 54:
-#line 200 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
+  case 42:
+#line 184 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+       {}
 #line 1025 "parser.cc"
     break;
 
-  case 55:
-#line 201 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                        {}
+  case 43:
+#line 188 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      {}
 #line 1031 "parser.cc"
     break;
 
-  case 56:
-#line 202 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                        {}
+  case 44:
+#line 189 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+      {}
 #line 1037 "parser.cc"
     break;
 
-  case 57:
-#line 203 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                        {}
+  case 45:
+#line 190 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+               {}
 #line 1043 "parser.cc"
     break;
 
-  case 58:
-#line 204 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                        {}
+  case 46:
+#line 191 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+        {}
 #line 1049 "parser.cc"
     break;
 
-  case 59:
-#line 205 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-       {}
+  case 47:
+#line 192 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                                 {}
 #line 1055 "parser.cc"
     break;
 
-  case 60:
-#line 206 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                            {}
+  case 48:
+#line 193 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                                    {}
 #line 1061 "parser.cc"
     break;
 
-  case 61:
-#line 207 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                            {}
+  case 49:
+#line 194 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                             {}
 #line 1067 "parser.cc"
     break;
 
-  case 62:
-#line 208 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                {}
+  case 50:
+#line 195 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+            {}
 #line 1073 "parser.cc"
     break;
 
-  case 63:
-#line 209 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                               {}
+  case 51:
+#line 196 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+               {}
 #line 1079 "parser.cc"
     break;
 
-  case 64:
-#line 210 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                   {}
+  case 52:
+#line 197 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+             {}
 #line 1085 "parser.cc"
     break;
 
-  case 65:
-#line 211 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-           {}
+  case 53:
+#line 198 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      {}
 #line 1091 "parser.cc"
     break;
 
-  case 66:
-#line 212 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-             {}
+  case 54:
+#line 203 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      {}
 #line 1097 "parser.cc"
     break;
 
-  case 67:
-#line 216 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-         {}
+  case 55:
+#line 204 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                        {}
 #line 1103 "parser.cc"
     break;
 
-  case 68:
-#line 217 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                              {}
+  case 56:
+#line 205 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                        {}
 #line 1109 "parser.cc"
     break;
 
-  case 69:
-#line 221 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
+  case 57:
+#line 206 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                        {}
 #line 1115 "parser.cc"
     break;
 
-  case 70:
-#line 225 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                   {}
+  case 58:
+#line 207 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                        {}
 #line 1121 "parser.cc"
     break;
 
-  case 71:
-#line 226 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                      {}
+  case 59:
+#line 208 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+       { yylhs.value.as < std::shared_ptr<Expr> > () = yystack_[0].value.as < std::shared_ptr<Expr> > (); }
 #line 1127 "parser.cc"
     break;
 
-  case 72:
-#line 227 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 60:
+#line 209 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                            {}
 #line 1133 "parser.cc"
     break;
 
-  case 73:
-#line 228 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 61:
+#line 210 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                            {}
 #line 1139 "parser.cc"
     break;
 
-  case 74:
-#line 229 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 62:
+#line 211 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                {}
 #line 1145 "parser.cc"
     break;
 
-  case 75:
-#line 230 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 63:
+#line 212 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                               {}
 #line 1151 "parser.cc"
     break;
 
-  case 76:
-#line 231 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 64:
+#line 213 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                   {}
 #line 1157 "parser.cc"
     break;
 
-  case 77:
-#line 232 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                     {}
+  case 65:
+#line 214 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+           { yylhs.value.as < std::shared_ptr<Expr> > () = std::make_shared<Primary_expr>(yystack_[0].value.as < std::string > (), Sym_type::Sym_int); }
 #line 1163 "parser.cc"
     break;
 
-  case 78:
-#line 233 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-           {}
+  case 66:
+#line 215 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+             { yylhs.value.as < std::shared_ptr<Expr> > () = std::make_shared<Primary_expr>(yystack_[0].value.as < std::string > (), Sym_type::Sym_float); }
 #line 1169 "parser.cc"
     break;
 
-  case 79:
-#line 234 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
-                           {}
+  case 67:
+#line 219 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+         {}
 #line 1175 "parser.cc"
     break;
 
+  case 68:
+#line 220 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                              {}
+#line 1181 "parser.cc"
+    break;
 
-#line 1179 "parser.cc"
+  case 69:
+#line 225 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+{
+	if (yystack_[0].value.as < std::vector<std::shared_ptr<Expr>> > ().empty())
+	{
+		yylhs.value.as < std::shared_ptr<Expr> > () = std::make_shared<Primary_expr>(yystack_[1].value.as < std::string > (), Sym_type::Sym_object);
+	}
+	else
+	{
+		yylhs.value.as < std::shared_ptr<Expr> > () = std::make_shared<Access_array_expr>(yystack_[1].value.as < std::string > (), Array_access_list(std::move(yystack_[0].value.as < std::vector<std::shared_ptr<Expr>> > ())));
+	}
+}
+#line 1196 "parser.cc"
+    break;
+
+  case 70:
+#line 238 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                   {}
+#line 1202 "parser.cc"
+    break;
+
+  case 71:
+#line 239 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                      {}
+#line 1208 "parser.cc"
+    break;
+
+  case 72:
+#line 240 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1214 "parser.cc"
+    break;
+
+  case 73:
+#line 241 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1220 "parser.cc"
+    break;
+
+  case 74:
+#line 242 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1226 "parser.cc"
+    break;
+
+  case 75:
+#line 243 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1232 "parser.cc"
+    break;
+
+  case 76:
+#line 244 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1238 "parser.cc"
+    break;
+
+  case 77:
+#line 245 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                     {}
+#line 1244 "parser.cc"
+    break;
+
+  case 78:
+#line 246 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+           {}
+#line 1250 "parser.cc"
+    break;
+
+  case 79:
+#line 247 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+                           {}
+#line 1256 "parser.cc"
+    break;
+
+
+#line 1260 "parser.cc"
 
             default:
               break;
@@ -1401,7 +1482,7 @@ namespace yy {
   {
     -122,     3,  -122,   133,  -122,  -122,  -122,   128,   -18,   -76,
     -122,  -122,   134,  -122,  -122,  -122,    75,   149,  -122,   114,
-    -122,   116,  -121,   -23,   -49,   -20,  -122,  -122
+    -122,   116,  -121,   -23,   -20,   -49,  -122,  -122
   };
 
   const signed char
@@ -1409,7 +1490,7 @@ namespace yy {
   {
       -1,    45,     1,    46,     9,    10,    11,    18,    29,    88,
      111,    16,    25,    12,    13,    58,    59,    47,    23,    48,
-      49,    50,    51,    92,    93,    68,    98,     2
+      49,    50,    51,    92,    68,    93,    98,     2
   };
 
   const unsigned char
@@ -1482,15 +1563,15 @@ namespace yy {
       33,    37,    58,    59,    22,    53,    32,    33,    39,    49,
       22,    48,     6,     8,     9,    10,    11,    22,    23,    24,
       25,    26,    32,    38,    39,    42,    44,    58,    60,    61,
-      62,    63,    64,    66,    49,    53,    40,    42,    56,    57,
-      34,    35,    39,    39,    32,    32,    32,    64,    66,    39,
+      62,    63,    64,    65,    49,    53,    40,    42,    56,    57,
+      34,    35,    39,    39,    32,    32,    32,    64,    65,    39,
       49,    64,    64,    64,    60,    62,    25,    26,    27,    28,
       29,    32,    34,    34,    22,    33,    40,    37,    50,    64,
-      64,    21,    64,    65,    65,    32,    40,    64,    67,    40,
+      64,    21,    64,    66,    66,    32,    40,    64,    67,    40,
       64,    64,    64,    64,    64,    64,    50,    35,    57,    38,
-      50,    51,    36,    65,    13,    14,    15,    16,    17,    18,
+      50,    51,    36,    66,    13,    14,    15,    16,    17,    18,
       19,    20,    40,    40,    33,    40,    32,    36,    33,    38,
-      65,    65,    65,    65,    65,    65,    65,    65,    63,    63,
+      66,    66,    66,    66,    66,    66,    66,    66,    63,    63,
       64,    49,    50,     7,    63
   };
 
@@ -1503,8 +1584,8 @@ namespace yy {
       55,    56,    56,    57,    57,    58,    58,    59,    60,    61,
       61,    62,    62,    63,    63,    63,    63,    63,    63,    63,
       63,    63,    63,    63,    64,    64,    64,    64,    64,    64,
-      64,    64,    64,    64,    64,    64,    64,    67,    67,    66,
-      65,    65,    65,    65,    65,    65,    65,    65,    65,    65
+      64,    64,    64,    64,    64,    64,    64,    67,    67,    65,
+      66,    66,    66,    66,    66,    66,    66,    66,    66,    66
   };
 
   const signed char
@@ -1536,7 +1617,7 @@ namespace yy {
   "VarDeclItem", "ArrayAccessList", "InitVal", "InitValList",
   "ConstDeclItemList", "ConstDeclItem", "FuncDef", "FunctionHead",
   "FuncFParamList", "FuncFParam", "Block", "LB", "RB", "BlockItemList",
-  "BlockItem", "Stmt", "ArithExp", "CondExp", "Lval", "FuncRParamList",
+  "BlockItem", "Stmt", "ArithExp", "Lval", "CondExp", "FuncRParamList",
   "Start", YY_NULLPTR
   };
 
@@ -1544,14 +1625,14 @@ namespace yy {
   const unsigned char
   parser::yyrline_[] =
   {
-       0,    78,    78,    81,    82,    83,    87,    88,    92,    96,
-      97,   101,   102,   103,   107,   108,   113,   114,   118,   119,
-     122,   126,   127,   131,   135,   136,   140,   141,   145,   149,
-     150,   154,   155,   159,   160,   164,   165,   168,   171,   175,
-     176,   180,   181,   185,   186,   187,   188,   189,   190,   191,
-     192,   193,   194,   195,   200,   201,   202,   203,   204,   205,
-     206,   207,   208,   209,   210,   211,   212,   216,   217,   221,
-     225,   226,   227,   228,   229,   230,   231,   232,   233,   234
+       0,    78,    78,    81,    82,    83,    87,    88,    92,    97,
+      98,   103,   104,   105,   110,   111,   116,   117,   121,   122,
+     125,   129,   130,   134,   138,   139,   143,   144,   148,   152,
+     153,   157,   158,   162,   163,   167,   168,   171,   174,   178,
+     179,   183,   184,   188,   189,   190,   191,   192,   193,   194,
+     195,   196,   197,   198,   203,   204,   205,   206,   207,   208,
+     209,   210,   211,   212,   213,   214,   215,   219,   220,   224,
+     238,   239,   240,   241,   242,   243,   244,   245,   246,   247
   };
 
   // Print the state stack on the debug stream.
@@ -1633,9 +1714,9 @@ namespace yy {
   }
 
 } // yy
-#line 1637 "parser.cc"
+#line 1718 "parser.cc"
 
-#line 237 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
+#line 250 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/parser.yy"
 
 
 

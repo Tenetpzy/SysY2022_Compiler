@@ -4,6 +4,7 @@
 #include "Symbol.h"
 
 class TAC;
+class TAC_var_decl;
 
 enum class Op_type
 {
@@ -27,9 +28,9 @@ enum class Op_type
 
 enum class Expr_type
 {
-    Binary_arith_rel_expr,  // ok
+    Binary_arith_rel_expr,  // 常量传播没写完
     Binary_logic_expr,
-    Unary_arith_expr,  // ok
+    Unary_arith_expr,  // 常量传播
     Unary_logic_expr,
     Primary_expr,  // ok
 //    Ident_ref_expr,   // ok
@@ -69,10 +70,9 @@ public:
 
     // 是否为字面常数表达式
     // 常量传播使用
-    // 只有Primary_expr需要覆写
-    virtual bool is_literal_num_expr() const
+    bool is_literal_num_expr() const
     {
-        return false;
+        return value->is_literal_num_sym();
     }
 
 //    virtual Expr_type expr_type() const = 0;   // 表达式值类别
@@ -135,21 +135,18 @@ public:
     std::string to_string() const override;
 };
 
-// 表达式为一个变量或立即数
+// 表达式为一个标识符或立即数
 class Primary_expr : public Expr
 {
+private:
+    std::shared_ptr<Symbol> sym;
+    std::list<std::shared_ptr<TAC>> gen_val_tac;
+
 public:
 
     // Exp --> Number
     // Exp --> Ident
-
-    // Ident的语义检查由归约器实现
-    // 因为识别到一个Ident时，无法区别它是引用还是变量
-    // 而处理引用和变量的表达式类型不同
-    Primary_expr(const std::shared_ptr<Symbol> sym)
-    {
-        value = sym;
-    }
+    Primary_expr(const std::string &ident, const Sym_type sym_type);
 
     ~Primary_expr() = default;
 
@@ -159,14 +156,15 @@ public:
         return std::list<std::shared_ptr<TAC>>();
     }
 
-    std::string to_string() const override
+    // 求值可能需要额外操作（如引用数组名的表达式）
+    std::list<std::shared_ptr<TAC>> gen_value_tac_list() const override
     {
-        return value->to_string();
+        return gen_val_tac;
     }
 
-    bool is_literal_num_expr() const override
+    std::string to_string() const override
     {
-        return value->is_literal_num_sym();
+        return sym->to_string();
     }
 };
 
@@ -198,14 +196,13 @@ public:
     }
 };
 
-// 数组访问表达式, 如声明int a[2][2], 表达式为a，a[1]，a[i][j]
+// 数组访问表达式, 如声明int a[2][2], 表达式为a[1]，a[i][j]
 // 如果是一个子数组，该表达式不可以作为左值
 // 否则，由数组是否为const变量决定它是否可作为左值
 class Access_array_expr : public Expr
 {
 private:
-    std::shared_ptr<Symbol> array;  // 访问的数组
-
+    std::shared_ptr<Symbol> array;  // ident指代的数组符号(可能是数组变量本身，也可能是数组的引用（参数）)
     std::shared_ptr<Symbol> array_addr;  // 数组地址
     Array_access_list arr_access_list;
 
@@ -220,13 +217,12 @@ private:
     std::list<std::shared_ptr<TAC>> gen_val_tac;
 
     // 进行数组访问表达式本身的合法性检查
-    void init();
+    void init(const std::string &ident);
 
 public:
 
-    // 传入的array要么是直接指代数组的符号，要么是数组的引用
-    Access_array_expr(std::shared_ptr<Symbol> arr, Array_access_list &&access) : array(arr), arr_access_list(access) { init(); }
-    Access_array_expr(std::shared_ptr<Symbol> arr, const Array_access_list &access) : array(arr), arr_access_list(access) { init(); }
+    Access_array_expr(const std::string &ident, Array_access_list &&access) : arr_access_list(access) { init(ident); }
+    Access_array_expr(const std::string &ident, const Array_access_list &access) : arr_access_list(access) { init(ident); }
     ~Access_array_expr() = default;
 
     std::list<std::shared_ptr<TAC>> reduce_tac_list() const override
@@ -238,7 +234,52 @@ public:
     {
         return gen_val_tac;
     }
+
+    std::string to_string() const override
+    {
+        return array->to_string() + arr_access_list.to_string();
+    }
 };
+
+
+
+
+class Var_decl_item
+{
+private:
+    std::string name;
+    std::vector<std::shared_ptr<Expr>> access_list;
+
+public:
+    Var_decl_item(std::string &&n, std::vector<std::shared_ptr<Expr>> &&ls) : name(std::move(n)), access_list(std::move(ls)) {}
+
+    // test used default constructor
+    Var_decl_item() {}
+
+    friend class Var_decl;
+};
+
+class Var_decl
+{
+private:
+    std::list<std::shared_ptr<TAC_var_decl>> decl_tac_list;
+    std::shared_ptr<Type> base_type;
+
+    void do_new_decl(Var_decl_item &item);
+
+public:
+    Var_decl(const std::shared_ptr<Type> basetype, Var_decl_item &item);
+
+    // 单个声明语句声明多个变量
+    Var_decl(Var_decl &pre, Var_decl_item &item);
+
+    // test used default constructor
+    Var_decl() {}
+
+    std::list<std::shared_ptr<TAC_var_decl>>& get_decl_tac_list();
+};
+
+
 
 
 
