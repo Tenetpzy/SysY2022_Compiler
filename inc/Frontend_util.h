@@ -15,24 +15,51 @@ extern int yycolno;
 class Sym_environment;
 enum class Op_type;
 enum class Type_class;
+enum class Sym_type;
 class Symbol;
 class TAC;
+class TAC_var_decl;
 class Type;
 
 class Frontend_env
 {
 private:
-    static Sym_environment *sym_env;
+    static Sym_environment *var_env;
+    static Sym_environment *func_env;
+    static std::list<std::shared_ptr<TAC_var_decl>> glob_var_decl_list;
 
 private:
-    static Sym_environment* generate_sym_env();
+    static Sym_environment* generate_var_env();
+    static Sym_environment* generate_func_env();
 
 public:
-    static Sym_environment& get_sym_env()
+    static Sym_environment& get_var_env()
     {
-        if (sym_env == nullptr)
-            sym_env = generate_sym_env();
-        return *sym_env;
+        if (var_env == nullptr)
+            var_env = generate_var_env();
+        return *var_env;
+    }
+
+    static Sym_environment& get_func_env()
+    {
+        if (func_env == nullptr)
+            func_env = generate_func_env();
+        return *func_env;
+    }
+
+    static void append_glob_var_decl(std::shared_ptr<TAC_var_decl> decl)
+    {
+        glob_var_decl_list.push_back(decl);
+    }
+
+    static void append_glob_var_decl(std::list<std::shared_ptr<TAC_var_decl>> &decl_list)
+    {
+        glob_var_decl_list.splice(glob_var_decl_list.end(), decl_list);
+    }
+
+    static std::list<std::shared_ptr<TAC_var_decl>>& get_glob_var_decl_list()
+    {
+        return glob_var_decl_list;
     }
 };
 
@@ -140,4 +167,5 @@ private:
 
 public:
     static std::shared_ptr<Symbol> gen_expr_sym_object(std::shared_ptr<Type> type);
+    static std::shared_ptr<Symbol> gen_sym_literal_num(const Sym_type type, const std::string &num);
 };

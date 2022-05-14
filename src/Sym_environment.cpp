@@ -39,6 +39,28 @@ std::shared_ptr<Symbol> Sym_environment_trie::get_symbol(const std::string &name
         return std::shared_ptr<Symbol>();
 }
 
+std::shared_ptr<Symbol> Sym_environment_trie::get_sym_in_current_env(const std::string &name) const
+{
+    Sym_trie_node *node = env_list.back().get();
+    size_t len = name.length();
+    size_t name_index = 0;
+
+    for (; name_index < len; ++name_index)
+    {
+        auto it = node->next_map.find(name[name_index]);
+        if (it == node->next_map.end())
+            break;
+        if (it->second.persistent_flag == 0)
+            break;
+        node = it->second.nxt.get();
+    }
+
+    if (name_index == len)
+        return node->sym;
+    else
+        return std::shared_ptr<Symbol>();
+}
+
 void Sym_environment_trie::add_symbol(const std::string &name, const std::shared_ptr<Symbol> symbol)
 {
     Sym_trie_node *node = env_list.back().get();
@@ -47,7 +69,8 @@ void Sym_environment_trie::add_symbol(const std::string &name, const std::shared
     {
         auto it = node->next_map.find(ch);
         if (it == node->next_map.end()) // 不存在前缀，插入新结点保存前缀
-            it = node->next_map.insert(std::make_pair(ch, trie_node_next(std::make_shared<Sym_trie_node>()))).first;
+            // 插入时需要使用原位构造，避免一次拷贝构造，使得trie_node_next中persist为0
+            it = node->next_map.emplace(ch, std::make_shared<Sym_trie_node>()).first;
         else
         {
             auto &nxt_node = it->second;

@@ -1,9 +1,7 @@
-
-int main(int x, float y[][2])
-{
-    x = 1;
-    y[1][1] = x;
-    const float f;
-
-    main(x, y[1]);
-}
+int x;
+int xy;
+float asfukfvnjcx;
+int arr1[1];
+float arr2[2][3][4];
+int arr3[1][2][3][4][5][6][70];
+int m, n, arr1;

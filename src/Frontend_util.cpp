@@ -3,8 +3,12 @@
 #include "Semantic.h"
 #include "Type.h"
 #include "Symbol.h"
+#include "TAC.h"
 
-Sym_environment* Frontend_env::sym_env = nullptr;
+Sym_environment* Frontend_env::var_env = nullptr;
+Sym_environment* Frontend_env::func_env = nullptr;
+
+std::list<std::shared_ptr<TAC_var_decl>> Frontend_env::glob_var_decl_list;
 
 std::unordered_map<Op_type, std::string> Frontend_util::op_expr_str = {
     {Op_type::add, "+"},
@@ -23,7 +27,12 @@ std::unordered_map<Op_type, std::string> Frontend_util::op_expr_str = {
     {Op_type::L_not, "!"}
 };
 
-Sym_environment* Frontend_env::generate_sym_env()
+Sym_environment* Frontend_env::generate_var_env()
+{
+    return new Sym_environment_trie();
+}
+
+Sym_environment* Frontend_env::generate_func_env()
 {
     return new Sym_environment_trie();
 }
@@ -65,8 +74,30 @@ Type_converter::Type_converter_ret_type Type_converter::convert(const Type_class
         return std::make_pair(sourceSym, std::list<std::shared_ptr<TAC>>());
 }
 
+
+unsigned long long Tmp_symbol_generator::var_counter = 0;
+unsigned long long Tmp_symbol_generator::label_counter = 0;
+
 std::shared_ptr<Symbol> Tmp_symbol_generator::gen_expr_sym_object(std::shared_ptr<Type> type)
 {
     std::string name = "t" + std::to_string(++var_counter);
-    return std::make_shared<Sym_object>(type, std::move(name), Frontend_env::get_sym_env().current_env_tag());
+    return std::make_shared<Sym_object>(type, std::move(name), Frontend_env::get_var_env().current_env_tag());
+}
+
+std::shared_ptr<Symbol> Tmp_symbol_generator::gen_sym_literal_num(const Sym_type type, const std::string &num)
+{
+    switch (type)
+    {
+    case Sym_type::Sym_int:
+        return std::make_shared<Sym_int>(std::atoi(num.c_str()));
+        break;
+    
+    case Sym_type::Sym_float:
+        return std::make_shared<Sym_float>(float(std::atof(num.c_str())));
+        break;
+
+    default:
+        Frontend_util::report_internal_error("gen_sym_literal_num: Sym_type不是字面常数");
+        break;
+    }
 }

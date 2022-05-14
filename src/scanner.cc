@@ -907,12 +907,12 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 42 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/scanner.l"
-{ yylval->emplace<std::string>(*yytext);  return TOKEN::IDENT; }
+{ yylval->emplace<std::string>(yytext);  return TOKEN::IDENT; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 43 "/home/pzy/SysY2022/SysY2022_Compiler/frontend_src/scanner.l"
-{  yylval->emplace<std::string>(*yytext);  return TOKEN::INTCONST; }
+{  yylval->emplace<std::string>(yytext);  return TOKEN::INTCONST; }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */

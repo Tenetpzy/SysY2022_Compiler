@@ -82,7 +82,7 @@ int Array_type::get_size() const
 std::string Array_type::to_string() const
 {
     std::string s = base_type->to_string();
-    s += " [";
+    s += "[";
     if (dim[0] != 0)
         s += std::to_string(dim[0]);
     s += ']';
@@ -187,6 +187,22 @@ std::string Float_type::to_string() const
     return std::string("float");
 }
 
+int Const_type::get_size() const
+{
+    return base_type->get_size();
+}
+
+Type_class Const_type::get_type_class() const
+{
+    return base_type->get_type_class();
+}
+
+std::string Const_type::to_string() const
+{
+    std::string s("const ");
+    s += base_type->to_string();
+    return s;
+}
 
 
 std::shared_ptr<Type> Type::type_max(std::shared_ptr<Type> t1, std::shared_ptr<Type> t2)
@@ -195,9 +211,4 @@ std::shared_ptr<Type> Type::type_max(std::shared_ptr<Type> t1, std::shared_ptr<T
         return std::make_shared<Float_type>();
     else
         return std::make_shared<Int_type>();
-}
-
-bool Type::is_base_var_type(const std::shared_ptr<Type> type)
-{
-    return type->get_type_class() == Type_class::T_int || type->get_type_class() == Type_class::T_float;
 }
